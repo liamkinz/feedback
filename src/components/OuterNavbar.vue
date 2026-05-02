@@ -4,17 +4,19 @@ import { ref } from 'vue'
 const isDrawerOpen = ref(false)
 
 const navLinks = [
-  { title: 'Home', href: '#' },
-  { title: 'About Us', href: '#' },
-  { title: 'Team', href: '#' },
-  { title: 'Services', href: '#' },
-  { title: 'Blog', href: '#' },
+  { title: 'Home', href: '/' },
+  { title: 'Dashboard', href: '/dashboard' },
+  { title: 'Internal', href: '/internal' },
+  { title: 'Final Inspection', href: '/final-inspection' },
+  { title: 'Site Inspection', href: '/site-inspection' },
   { title: 'Contact', href: '#' },
 ]
 
 const toggleDrawer = () => {
   isDrawerOpen.value = !isDrawerOpen.value
 }
+
+import ThemeToggle from '@/components/ThemeToggle.vue'
 </script>
 
 <template>
@@ -38,6 +40,8 @@ const toggleDrawer = () => {
       >
         {{ link.title }}
       </v-btn>
+
+      <ThemeToggle />
 
       <v-btn class="desktop-cta-btn" style="margin-left: 100px" @click="() => {}"
         >Get Started</v-btn
