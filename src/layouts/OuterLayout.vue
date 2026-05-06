@@ -23,7 +23,7 @@ import { RouterView } from 'vue-router'
 }
 
 .main-content {
-  flex: 1;
+  flex: 1 1 auto;
   width: 100%;
 }
 </style>
