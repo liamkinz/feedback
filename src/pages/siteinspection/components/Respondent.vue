@@ -28,7 +28,7 @@ const isDark = computed(() => theme.global.current.value.dark)
 
     <!-- Respondent Information Card -->
     <v-card class="modern-card" :class="{ 'dark-card': isDark }" elevation="0">
-      <v-card-text style="padding: 24px; padding-md: 32px">
+      <v-card-text style="padding: 24px">
         <h2 class="section-title">Respondent Information</h2>
 
         <!-- Client Type -->
@@ -113,7 +113,7 @@ const isDark = computed(() => theme.global.current.value.dark)
 
     <!-- Number of Site Inspections -->
     <v-card class="modern-card" :class="{ 'dark-card': isDark }" elevation="0">
-      <v-card-text style="padding: 24px; padding-md: 32px">
+      <v-card-text style="padding: 24px">
         <h3 class="section-title">Number of Site Inspections</h3>
         <v-text-field
           v-model="respondentInfo.siteInspections"
