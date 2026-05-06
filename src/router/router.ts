@@ -27,10 +27,10 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 
-import OuterLayout from '@/layouts/OuterLayout.vue'
+import OuterLayout from '../layouts/OuterLayout.vue'
 
 // Landing Routes
-import LandingView from '@/pages/LandingPage/LandingView.vue'
+import LandingView from '../pages/LandingPage/LandingView.vue'
 
 // // Dashboard Routes
 // import DashboardView from '@/pages/dashboard/DashboardView.vue'
