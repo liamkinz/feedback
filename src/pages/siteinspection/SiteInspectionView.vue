@@ -26,10 +26,10 @@ const handleSubmit = async () => {
       selectedAnswers: selectedAnswers.value,
       selectedRatings: selectedRatings.value,
       respondentInfo: respondentInfo.value,
-      comments: comments.value
+      comments: comments.value,
     })
     alert('Feedback submitted successfully!')
-    
+
     // Optional: Reset form fields here if needed
     // selectedAnswers.value = {}
     // selectedRatings.value = {}

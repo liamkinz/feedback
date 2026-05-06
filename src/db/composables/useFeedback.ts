@@ -10,7 +10,7 @@ export function useFeedback() {
         respondentInfo: JSON.parse(JSON.stringify(data.respondentInfo)),
         comments: data.comments,
         synced: false,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       })
       console.log('Site inspection successfully saved to Dexie with ID:', id)
       return id
@@ -20,7 +20,20 @@ export function useFeedback() {
     }
   }
 
+  const getSiteInspections = async () => {
+    try {
+      // Returns an array of all records
+      // You can also use .where(), .orderBy(), etc.
+      const records = await db.siteInspections.toArray()
+      return records
+    } catch (error) {
+      console.error('Error fetching site inspections:', error)
+      return []
+    }
+  }
+
   return {
-    submitSiteInspection
+    submitSiteInspection,
+    getSiteInspections,
   }
 }

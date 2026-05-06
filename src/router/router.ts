@@ -40,6 +40,7 @@ import LandingView from '../pages/LandingPage/LandingView.vue'
 
 // Site Inspection Routes
 import SiteInspectionView from '@/pages/siteinspection/SiteInspectionView.vue'
+import SiteInspectionDashboard from '@/pages/siteinspection/components/SiteInspectionDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,6 +71,12 @@ const router = createRouter({
           path: 'site-inspection',
           name: 'site-inspection',
           component: SiteInspectionView,
+          meta: { requiresGuest: true },
+        },
+        {
+          path: 'site-inspection/dashboard',
+          name: 'site-inspection-dashboard',
+          component: SiteInspectionDashboard,
           meta: { requiresGuest: true },
         },
       ],
