@@ -19,6 +19,7 @@ class FeedbackDatabase extends Dexie {
 
     this.version(1).stores({
       siteInspections: '++id, synced, createdAt',
+      feedbacks: null, // Placeholder for future tables
     })
   }
 }
