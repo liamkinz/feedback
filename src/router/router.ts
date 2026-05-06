@@ -32,6 +32,15 @@ import OuterLayout from '@/layouts/OuterLayout.vue'
 // Landing Routes
 import LandingView from '@/pages/LandingPage/LandingView.vue'
 
+// // Dashboard Routes
+// import DashboardView from '@/pages/dashboard/DashboardView.vue'
+
+// // Internal Routes
+// import InternalView from '@/pages/internal/InternalView.vue'
+
+// Site Inspection Routes
+import SiteInspectionView from '@/pages/siteinspection/SiteInspectionView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -43,6 +52,24 @@ const router = createRouter({
           path: '',
           name: 'landing',
           component: LandingView,
+          meta: { requiresGuest: true },
+        },
+        // {
+        //   path: 'dashboard',
+        //   name: 'dashboard',
+        //   component: DashboardView,
+        //   meta: { requiresGuest: true },
+        // },
+        // {
+        //   path: 'internal',
+        //   name: 'internal',
+        //   component: InternalView,
+        //   meta: { requiresGuest: true },
+        // },
+        {
+          path: 'site-inspection',
+          name: 'site-inspection',
+          component: SiteInspectionView,
           meta: { requiresGuest: true },
         },
       ],
