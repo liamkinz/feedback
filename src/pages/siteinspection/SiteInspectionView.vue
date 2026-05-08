@@ -75,3 +75,17 @@ const handleSubmit = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.survey-title {
+  color: #0f1b2d;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.survey-subtitle {
+  color: #0f1b2d;
+  font-size: 1.125rem;
+  margin-top: 4px;
+}
+</style>
