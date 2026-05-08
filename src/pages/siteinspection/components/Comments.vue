@@ -42,35 +42,35 @@ const handleCommentsUpdate = (value: string) => {
 
 <style scoped>
 .modern-card {
-  background: white !important;
+  background: var(--blue-0) !important;
   border-radius: 16px !important;
   margin-bottom: 24px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 6px 18px rgba(0, 86, 210, 0.12) !important;
+  border: 1px solid var(--blue-200) !important;
   transition:
     box-shadow 0.3s ease,
     transform 0.3s ease;
 }
 
 .dark-card {
-  background: #2d2d44 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: var(--card-dark) !important;
+  border: 1px solid var(--card-dark-border) !important;
 }
 
 .modern-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 10px 28px rgba(0, 86, 210, 0.2) !important;
   transform: translateY(-2px);
 }
 
 .section-title {
   font-size: 20px;
   line-height: 1;
-  color: #555;
+  color: var(--ink-700);
   margin: 0;
 }
 
 .dark-card .section-title {
-  color: #ffffff;
+  color: var(--blue-0);
 }
 
 .modern-input {
@@ -79,49 +79,57 @@ const handleCommentsUpdate = (value: string) => {
 
 .modern-input :deep(.v-field__input) {
   font-size: 12px;
-  color: #555;
+  color: var(--ink-700);
   font-family: 'Inter', sans-serif;
 }
 
 .dark-card .modern-input :deep(.v-field__input) {
-  color: #d0d0d0;
+  color: #634646;
 }
 
 .modern-input :deep(.v-label) {
   font-size: 14px !important;
-  color: #888 !important;
+  color: var(--ink-700) !important;
 }
 
 .dark-card .modern-input :deep(.v-label) {
-  color: #b0b0b0 !important;
+  color: #ffffff !important;
 }
 
 .modern-input :deep(.v-field__outline__start),
 .modern-input :deep(.v-field__outline__notch),
 .modern-input :deep(.v-field__outline__end) {
-  border-color: #ddd !important;
+  border-color: #a8f1ff !important;
+}
+
+.modern-input :deep(.v-field__outline) {
+  color: #67bfd0 !important;
+}
+
+.modern-input :deep(.v-field) {
+  background-color: #b9dae6 !important;
 }
 
 .dark-card .modern-input :deep(.v-field__outline__start),
 .dark-card .modern-input :deep(.v-field__outline__notch),
 .dark-card .modern-input :deep(.v-field__outline__end) {
-  border-color: #505070 !important;
+  border-color: #a8f1ff !important;
 }
 
 .dark-card .modern-input :deep(.v-field) {
-  background-color: #1e1e2e !important;
+  background-color: #2d2e30 !important;
 }
 
 .dark-card .modern-input :deep(.v-field__control) {
-  color: #d0d0d0 !important;
+  color: #d6d6d6 !important;
 }
 
 .dark-card .modern-input :deep(.v-textarea__slot) {
-  color: #d0d0d0 !important;
+  color: #d6d6d6 !important;
 }
 
 .dark-card .modern-input :deep(.v-field__outline) {
-  color: #505070 !important;
+  color: #a8f1ff !important;
 }
 
 /* Mobile Screens (below 768px) */
