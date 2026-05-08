@@ -46,7 +46,7 @@ onMounted(async () => {
   <v-container fluid class="d-flex flex-column align-center">
     <h1 class="mb-4">Site Inspections Dashboard</h1>
 
-    <v-card class="mx-auto w-100" style="max-width: 1400px">
+    <v-card class="mx-auto w-100 dashboard-card" style="max-width: 1400px">
       <v-data-table
         :headers="headers"
         :items="inspections"
@@ -71,3 +71,12 @@ onMounted(async () => {
     </v-card>
   </v-container>
 </template>
+
+<style scoped>
+.dashboard-card {
+  background: var(--blue-0) !important;
+  border: 1px solid var(--blue-200) !important;
+  box-shadow: 0 6px 18px rgba(0, 86, 210, 0.12) !important;
+  border-radius: 16px !important;
+}
+</style>
