@@ -5,7 +5,7 @@ import type {
   RatingQuestion,
   RatingOption,
   RespondentInfo,
-} from '../types/siteinspections.type'
+} from '../types/siteinspection.type'
 
 export function useSiteInspection() {
   const theme = useTheme()
@@ -121,6 +121,21 @@ export function useSiteInspection() {
 
   const comments = ref('')
 
+  // Add this before return {}
+  const resetForm = () => {
+    respondentInfo.value = {
+      clientType: '',
+      date: '',
+      sex: '',
+      age: '',
+      contactNumber: '',
+      siteInspections: '',
+    }
+    selectedAnswers.value = { CC1: '', CC2: '', CC3: '' }
+    selectedRatings.value = {}
+    comments.value = ''
+  }
+
   return {
     theme,
     isDark,
@@ -131,5 +146,6 @@ export function useSiteInspection() {
     selectedRatings,
     respondentInfo,
     comments,
+    resetForm,
   }
 }
