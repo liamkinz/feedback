@@ -1,6 +1,18 @@
 import 'vuetify/styles'
 import { createVuetify, type ThemeDefinition } from 'vuetify'
-import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
+// import '@mdi/font/css/materialdesignicons.css' // ← or import here instead of main.ts
+import {
+  mdiCheckboxMarked,
+  mdiCheckboxBlankOutline,
+  mdiMinusBox,
+  mdiRadioboxMarked,
+  mdiRadioboxBlank,
+  mdiChevronDown,
+  mdiMenuDown,
+  mdiCloseCircle,
+  mdiClose,
+} from '@mdi/js'
 
 const lightTheme: ThemeDefinition = {
   dark: false,
@@ -42,7 +54,18 @@ export const vuetify = createVuetify({
   },
   icons: {
     defaultSet: 'mdi',
-    aliases,
+    aliases: {
+      ...aliases,
+      checkboxOn: mdiCheckboxMarked, // ← v-checkbox checked state
+      checkboxOff: mdiCheckboxBlankOutline, // ← v-checkbox unchecked state
+      checkboxIndeterminate: mdiMinusBox,
+      radioOn: mdiRadioboxMarked, // ← v-radio selected state
+      radioOff: mdiRadioboxBlank, // ← v-radio unselected state
+      dropdown: mdiMenuDown,
+      expand: mdiChevronDown,
+      clear: mdiCloseCircle,
+      close: mdiClose,
+    },
     sets: { mdi },
   },
   defaults: {
