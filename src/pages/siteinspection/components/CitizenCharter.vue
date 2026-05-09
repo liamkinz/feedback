@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTheme } from 'vuetify'
-import type { Question } from '../types/siteinspections.type'
+import type { Question } from '../types/siteinspection.type'
 
 defineProps<{
   questions: Question[]
@@ -56,67 +56,67 @@ const isDark = computed(() => theme.global.current.value.dark)
 
 <style scoped>
 .modern-card {
-  background: white !important;
+  background: var(--blue-0) !important;
   border-radius: 16px !important;
   margin-bottom: 24px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 6px 18px rgba(0, 86, 210, 0.12) !important;
+  border: 1px solid var(--blue-200) !important;
   transition:
     box-shadow 0.3s ease,
     transform 0.3s ease;
 }
 
 .dark-card {
-  background: #2d2d44 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: var(--card-dark) !important;
+  border: 1px solid var(--card-dark-border) !important;
 }
 
 .modern-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 10px 28px rgba(0, 86, 210, 0.2) !important;
   transform: translateY(-2px);
 }
 
 .info-card {
-  background: linear-gradient(135deg, #f5f7ff 0%, #f8f5ff 100%) !important;
-  border: 1px solid #e8e5f5 !important;
+  background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-200) 100%) !important;
+  border: 1px solid var(--blue-200) !important;
 }
 
 .dark-info-card {
-  background: linear-gradient(135deg, #3a3a5c 0%, #393a5c 100%) !important;
-  border: 1px solid rgba(102, 126, 234, 0.2) !important;
+  background: linear-gradient(135deg, #111111 0%, #1b1b1b 100%) !important;
+  border: 1px solid var(--card-dark-border) !important;
 }
 
 .instructions-title {
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 600;
-  color: #667eea;
+  color: var(--blue-900);
   margin-bottom: 12px;
 }
 
 .dark-info-card .instructions-title {
-  color: #90caf9;
+  color: var(--blue-0);
 }
 
 .instructions-text {
   font-size: 20px;
   line-height: 1.7;
-  color: #555;
+  color: var(--ink-700);
   margin: 0;
 }
 
 .dark-info-card .instructions-text {
-  color: #d0d0d0;
+  color: #d6d6d6;
 }
 
 .question-card {
-  border-left: 4px solid #667eea !important;
+  border-left: 4px solid var(--blue-900) !important;
 }
 
 .question-number {
   display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%);
+  color: var(--blue-0);
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 6px;
@@ -129,13 +129,13 @@ const isDark = computed(() => theme.global.current.value.dark)
   font-family: 'Poppins', sans-serif;
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--ink-900);
   margin-bottom: 16px;
   line-height: 1.6;
 }
 
 .dark-card .question-text {
-  color: #ffffff;
+  color: var(--blue-0);
 }
 
 .modern-radio {
@@ -144,17 +144,17 @@ const isDark = computed(() => theme.global.current.value.dark)
 
 .modern-radio :deep(.v-label) {
   font-size: 15px !important;
-  color: #555 !important;
+  color: var(--ink-700) !important;
 }
 
 .dark-card .modern-radio :deep(.v-label) {
-  color: #d0d0d0 !important;
+  color: #d6d6d6 !important;
 }
 
 /* Mobile Screens (below 768px) */
 @media (max-width: 768px) {
   .question-card {
-    border-left: 3px solid #667eea !important;
+    border-left: 3px solid var(--blue-900) !important;
   }
 
   .question-number {

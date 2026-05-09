@@ -1,75 +1,308 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useFeedback } from '../../../db/composables/useFeedback'
-import type { SiteInspectionFeedback } from '../../../db/database'
+import { ref, onMounted, computed } from 'vue'
+import { useFeedback } from '@/composables/useFeedback'
+import { getAllLocalInspections } from '@/services/siteInspectionService'
+import type { SiteInspectionFeedback } from '@/db/database'
 
-const { getSiteInspections } = useFeedback()
+const { sync, isSyncing, unsyncedCount, toast } = useFeedback()
+
+// ── State ──────────────────────────────────────────────────────
 const inspections = ref<SiteInspectionFeedback[]>([])
+const loading = ref(true)
+const isOnline = ref(navigator.onLine)
+const search = ref('')
 
-// Define the columns for the Vuetify data table
+// ── Date Range Filter ──────────────────────────────────────────
+const dateMenu = ref(false)
+const dateRange = ref<string[]>([])
+
+const dateRangeText = computed(() => {
+  if (dateRange.value.length === 0) return 'All Dates'
+  if (dateRange.value.length === 1) return formatDate(dateRange.value[0]!)
+
+  const sorted = [...dateRange.value].sort()
+  return `${formatDate(sorted[0]!)} — ${formatDate(sorted[sorted.length - 1]!)}`
+})
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+function clearDateRange() {
+  dateRange.value = []
+  dateMenu.value = false
+}
+
+function applyDateRange() {
+  dateMenu.value = false
+}
+
+// ── Filtered Inspections ───────────────────────────────────────
+const filteredInspections = computed(() => {
+  if (dateRange.value.length < 2) return inspections.value
+
+  const sorted = [...dateRange.value].sort()
+  const startDate = new Date(sorted[0]!)
+  const endDate = new Date(sorted[sorted.length - 1]!)
+
+  // Set end date to end of day
+  endDate.setHours(23, 59, 59, 999)
+
+  return inspections.value.filter((item) => {
+    if (!item.respondentInfo?.date) return false
+    const itemDate = new Date(item.respondentInfo.date)
+    return itemDate >= startDate && itemDate <= endDate
+  })
+})
+
+// ── Headers ────────────────────────────────────────────────────
 const headers = [
-  { title: 'ID', align: 'start', key: 'id' },
-  { title: 'Date', key: 'respondentInfo.date' },
-  { title: 'Client Type', key: 'respondentInfo.clientType' },
-  { title: 'Sex', key: 'respondentInfo.sex' },
-  { title: 'Age', key: 'respondentInfo.age' },
-  { title: 'Contact', key: 'respondentInfo.contactNumber' },
-  { title: 'siteInspections', key: 'respondentInfo.siteInspections' },
-  { title: 'CC1', key: 'selectedAnswers.CC1' },
-  { title: 'CC2', key: 'selectedAnswers.CC2' },
-  { title: 'CC3', key: 'selectedAnswers.CC3' },
-  { title: 'SQ0', key: 'selectedRatings.SQD0' },
-  { title: 'SQ1', key: 'selectedRatings.SQD1' },
-  { title: 'SQ2', key: 'selectedRatings.SQD2' },
-  { title: 'SQ3', key: 'selectedRatings.SQD3' },
-  { title: 'SQ4', key: 'selectedRatings.SQD4' },
-  { title: 'SQ5', key: 'selectedRatings.SQD5' },
-  { title: 'SQ6', key: 'selectedRatings.SQD6' },
-  { title: 'SQ7', key: 'selectedRatings.SQD7' },
-  { title: 'SQ8', key: 'selectedRatings.SQD8' },
-  { title: 'Comments', key: 'comments' },
-  { title: 'Synced', key: 'synced' },
+  { title: 'ID', key: 'id', width: '60px' },
+  { title: 'Date', key: 'respondentInfo.date', width: '110px' },
+  { title: 'Client Type', key: 'respondentInfo.clientType', width: '120px' },
+  { title: 'Sex', key: 'respondentInfo.sex', width: '70px' },
+  { title: 'Age', key: 'respondentInfo.age', width: '70px' },
+  { title: 'Contact', key: 'respondentInfo.contactNumber', width: '120px' },
+  { title: 'Site', key: 'respondentInfo.siteInspections', width: '100px' },
+  { title: 'CC1', key: 'selectedAnswers.CC1', width: '60px' },
+  { title: 'CC2', key: 'selectedAnswers.CC2', width: '60px' },
+  { title: 'CC3', key: 'selectedAnswers.CC3', width: '60px' },
+  { title: 'SQD0', key: 'selectedRatings.SQD0', width: '70px' },
+  { title: 'SQD1', key: 'selectedRatings.SQD1', width: '70px' },
+  { title: 'SQD2', key: 'selectedRatings.SQD2', width: '70px' },
+  { title: 'SQD3', key: 'selectedRatings.SQD3', width: '70px' },
+  { title: 'SQD4', key: 'selectedRatings.SQD4', width: '70px' },
+  { title: 'SQD5', key: 'selectedRatings.SQD5', width: '70px' },
+  { title: 'SQD6', key: 'selectedRatings.SQD6', width: '70px' },
+  { title: 'SQD7', key: 'selectedRatings.SQD7', width: '70px' },
+  { title: 'SQD8', key: 'selectedRatings.SQD8', width: '70px' },
+  { title: 'Comments', key: 'comments', width: '180px' },
+  { title: 'Synced', key: 'synced', width: '90px' },
 ] as const
 
-const loading = ref(true)
+// ── Computed Summary ───────────────────────────────────────────
+const syncedCount = computed(() => inspections.value.filter((i) => i.synced === 1).length)
+const totalCount = computed(() => inspections.value.length)
 
-onMounted(async () => {
+// ── Fetch Data ─────────────────────────────────────────────────
+const fetchInspections = async () => {
+  loading.value = true
   try {
-    inspections.value = await getSiteInspections()
+    inspections.value = await getAllLocalInspections()
   } finally {
     loading.value = false
   }
+}
+
+// ── Sync + Refresh ─────────────────────────────────────────────
+const handleSync = async () => {
+  await sync()
+  await fetchInspections()
+}
+
+// ── Lifecycle ──────────────────────────────────────────────────
+onMounted(async () => {
+  await fetchInspections()
+  window.addEventListener('online', () => {
+    isOnline.value = true
+  })
+  window.addEventListener('offline', () => {
+    isOnline.value = false
+  })
 })
 </script>
 
 <template>
   <v-container fluid class="d-flex flex-column align-center">
-    <h1 class="mb-4">Site Inspections Dashboard</h1>
+    <!-- Header Row -->
+    <div class="d-flex align-center justify-space-between w-100 mb-4" style="max-width: 1400px">
+      <h1>Site Inspections Dashboard</h1>
 
-    <v-card class="mx-auto w-100 dashboard-card" style="max-width: 1400px">
+      <div class="d-flex align-center ga-3">
+        <v-chip :color="isOnline ? 'success' : 'error'" size="small">
+          {{ isOnline ? '🟢 Online' : '🔴 Offline' }}
+        </v-chip>
+
+        <v-btn
+          color="primary"
+          :loading="isSyncing"
+          :disabled="unsyncedCount === 0"
+          prepend-icon="mdi-cloud-upload"
+          @click="handleSync"
+        >
+          {{ isSyncing ? 'Syncing...' : `Sync (${unsyncedCount} pending)` }}
+        </v-btn>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="d-flex ga-4 mb-4 w-100" style="max-width: 1400px">
+      <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
+        <div class="text-h4 font-weight-bold text-primary">{{ totalCount }}</div>
+        <div class="text-body-2 text-medium-emphasis">Total Records</div>
+      </v-card>
+
+      <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
+        <div class="text-h4 font-weight-bold text-success">{{ syncedCount }}</div>
+        <div class="text-body-2 text-medium-emphasis">Synced</div>
+      </v-card>
+
+      <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
+        <div class="text-h4 font-weight-bold text-warning">{{ unsyncedCount }}</div>
+        <div class="text-body-2 text-medium-emphasis">Pending Sync</div>
+      </v-card>
+    </div>
+
+    <!-- Data Table -->
+    <v-card class="w-100 dashboard-card" style="max-width: 1400px">
+      <!-- Toolbar: Search + Date Range -->
+      <v-card-title class="pa-4">
+        <div class="d-flex align-center ga-3 flex-wrap">
+          <!-- Search -->
+          <v-text-field
+            v-model="search"
+            placeholder="Search inspections..."
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+            density="compact"
+            hide-details
+            clearable
+            style="max-width: 280px"
+          />
+
+          <!-- Date Range Picker -->
+          <v-menu v-model="dateMenu" :close-on-content-click="false" location="bottom start">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                variant="outlined"
+                :color="dateRange.length ? 'primary' : 'default'"
+                prepend-icon="mdi-calendar-range"
+              >
+                {{ dateRangeText }}
+              </v-btn>
+            </template>
+
+            <v-card min-width="360" rounded="lg" elevation="4">
+              <v-card-title class="pa-4 pb-0 text-body-1 font-weight-medium">
+                Select Date Range
+              </v-card-title>
+
+              <v-card-subtitle class="px-4 pb-2 text-caption">
+                {{
+                  dateRange.length === 0
+                    ? 'Pick a start date'
+                    : dateRange.length === 1
+                      ? 'Now pick an end date'
+                      : dateRangeText
+                }}
+              </v-card-subtitle>
+
+              <!-- Vuetify Date Picker in range mode -->
+              <v-date-picker
+                v-model="dateRange"
+                multiple="range"
+                hide-header
+                show-adjacent-months
+                color="primary"
+                class="elevation-0"
+              />
+
+              <v-card-actions class="pa-4 pt-0 d-flex ga-2">
+                <v-btn variant="text" color="error" @click="clearDateRange"> Clear </v-btn>
+                <v-spacer />
+                <v-btn
+                  variant="tonal"
+                  color="primary"
+                  :disabled="dateRange.length < 2"
+                  @click="applyDateRange"
+                >
+                  Apply
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-menu>
+
+          <!-- Active filter chip -->
+          <v-chip
+            v-if="dateRange.length >= 2"
+            color="primary"
+            closable
+            @click:close="clearDateRange"
+          >
+            {{ dateRangeText }}
+          </v-chip>
+        </div>
+      </v-card-title>
+
       <v-data-table
         :headers="headers"
-        :items="inspections"
+        :items="filteredInspections"
         :loading="loading"
+        :search="search"
         hover
-        class="elevation-1 w-100"
+        class="elevation-0 w-100"
+        items-per-page="10"
       >
-        <!-- Custom formatting for the Synced column -->
-        <template v-slot:item.synced="{ item }">
-          <v-chip :color="item.synced ? 'success' : 'warning'" size="small">
-            {{ item.synced ? 'Yes' : 'No' }}
+        <template #item.synced="{ item }">
+          <v-chip :color="item.synced === 1 ? 'success' : 'warning'" size="small" variant="tonal">
+            {{ item.synced === 1 ? '✅ Yes' : '⏳ Pending' }}
           </v-chip>
         </template>
 
-        <!-- Custom formatting for the Comments column so it doesn't break layout -->
-        <template v-slot:item.comments="{ item }">
-          <div class="text-truncate" style="max-width: 200px">
-            {{ item.comments || 'No comments' }}
+        <template #item.comments="{ item }">
+          <div class="text-truncate" style="max-width: 180px">
+            {{ item.comments || '—' }}
           </div>
+        </template>
+
+        <template #no-data>
+          <div class="text-center py-8">
+            <v-icon size="48" color="grey-lighten-1">mdi-calendar-search</v-icon>
+            <p class="text-medium-emphasis mt-2">
+              {{
+                dateRange.length >= 2
+                  ? 'No records found in selected date range'
+                  : 'No inspections found'
+              }}
+            </p>
+            <v-btn
+              v-if="dateRange.length >= 2"
+              variant="text"
+              color="primary"
+              class="mt-2"
+              @click="clearDateRange"
+            >
+              Clear date filter
+            </v-btn>
+          </div>
+        </template>
+
+        <template #loading>
+          <v-skeleton-loader type="table-row@5" />
         </template>
       </v-data-table>
     </v-card>
   </v-container>
+
+  <!-- Toast -->
+  <v-snackbar
+    v-model="toast.show"
+    :color="toast.color"
+    :timeout="3000"
+    location="top right"
+    rounded="lg"
+    elevation="4"
+  >
+    {{ toast.message }}
+    <template #actions>
+      <v-btn variant="text" @click="toast.show = false">Close</v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <style scoped>
@@ -78,5 +311,10 @@ onMounted(async () => {
   border: 1px solid var(--blue-200) !important;
   box-shadow: 0 6px 18px rgba(0, 86, 210, 0.12) !important;
   border-radius: 16px !important;
+}
+
+.summary-card {
+  border: 1px solid rgba(0, 86, 210, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 86, 210, 0.08) !important;
 }
 </style>

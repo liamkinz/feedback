@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTheme } from 'vuetify'
-import type { RespondentInfo } from '../types/siteinspections.type'
+import type { RespondentInfo } from '../types/siteinspection.type'
 
 const props = defineProps<{
   respondentInfo: RespondentInfo

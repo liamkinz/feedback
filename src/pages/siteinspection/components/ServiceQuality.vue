@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTheme } from 'vuetify'
-import type { RatingQuestion, RatingOption } from '../types/siteinspections.type'
+import type { RatingQuestion, RatingOption } from '../types/siteinspection.type'
 
 defineProps<{
   ratingQuestions: RatingQuestion[]
