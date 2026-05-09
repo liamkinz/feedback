@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
-import { getAllLocalInspections } from '@/services/siteInspectionService'
-import type { SiteInspectionFeedback } from '@/db/database'
+import { getAllLocalFinalInspections } from '@/services/finalInspectionService'
+import type { FinalInspectionFeedback } from '@/db/database'
 
-const { sync, isSyncing, unsyncedCount, toast } = useFeedback()
+const { syncFinalInspections, isSyncing, unsyncedCount, toast } = useFeedback()
 
 // ── State ──────────────────────────────────────────────────────
-const inspections = ref<SiteInspectionFeedback[]>([])
+const inspections = ref<FinalInspectionFeedback[]>([])
 const loading = ref(true)
 const isOnline = ref(navigator.onLine)
 const search = ref('')
+
+// debugging offline mode - toggle to simulate offline for testing
+// const debugOffline = ref(false) // Debug mode to simulate offline
+
+// const effectiveIsOnline = computed(() => (debugOffline.value ? false : isOnline.value))
 
 // ── Date Range Filter ──────────────────────────────────────────
 const dateMenu = ref(false)
@@ -92,7 +97,7 @@ const totalCount = computed(() => inspections.value.length)
 const fetchInspections = async () => {
   loading.value = true
   try {
-    inspections.value = await getAllLocalInspections()
+    inspections.value = await getAllLocalFinalInspections()
   } finally {
     loading.value = false
   }
@@ -100,15 +105,19 @@ const fetchInspections = async () => {
 
 // ── Sync + Refresh ─────────────────────────────────────────────
 const handleSync = async () => {
-  await sync()
+  await syncFinalInspections()
   await fetchInspections()
 }
 
 // ── Lifecycle ──────────────────────────────────────────────────
 onMounted(async () => {
   await fetchInspections()
-  window.addEventListener('online', () => {
+  window.addEventListener('online', async () => {
     isOnline.value = true
+    // Auto-sync when connection is restored
+    if (unsyncedCount.value > 0) {
+      await handleSync()
+    }
   })
   window.addEventListener('offline', () => {
     isOnline.value = false
@@ -120,7 +129,7 @@ onMounted(async () => {
   <v-container fluid class="d-flex flex-column align-center">
     <!-- Header Row -->
     <div class="d-flex align-center justify-space-between w-100 mb-4" style="max-width: 1400px">
-      <h1>Site Inspections Dashboard</h1>
+      <h1>Final Inspections Dashboard</h1>
 
       <div class="d-flex align-center ga-3">
         <v-chip :color="isOnline ? 'success' : 'error'" size="small">

@@ -1,7 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
+:root {
+  --blue-900: #91c8e4;
+  --blue-700: #0089c7;
+  --blue-500: #66cdf2;
+  --blue-200: #c9eeff;
+  --blue-100: #e9f8ff;
+  --blue-0: #ffffff;
+  --ink-900: #0f1b2d;
+  --ink-700: #000000;
+  --card-dark: #2c3947;
+  --card-dark-border: #2c3947;
+}
+
 .survey-container {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #91c8e4;
   min-height: 100vh;
   padding: 24px 12px;
   font-family: 'Inter', sans-serif;
@@ -9,7 +22,7 @@
 }
 
 .survey-container-dark {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%);
 }
 
 .survey-wrapper {
@@ -20,7 +33,7 @@
 .survey-header {
   text-align: center;
   margin-bottom: 32px;
-  color: white;
+  color: var(--blue-0);
 }
 
 .survey-title {
@@ -38,13 +51,8 @@
 }
 
 .info-card {
-  background: linear-gradient(135deg, #f5f7ff 0%, #f8f5ff 100%) !important;
-  border: 1px solid #e8e5f5 !important;
-}
-
-.survey-container-dark .info-card {
-  background: linear-gradient(135deg, #3a3a5c 0%, #393a5c 100%) !important;
-  border: 1px solid rgba(102, 126, 234, 0.2) !important;
+  background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-200) 100%) !important;
+  border: 1px solid var(--blue-200) !important;
 }
 
 .submit-container {
@@ -61,14 +69,14 @@
   border-radius: 12px !important;
   text-transform: none !important;
   font-size: 15px !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4) !important;
+  background: linear-gradient(135deg, rgb(165, 214, 167) 0%, rgb(56, 142, 60) 100%) !important;
+  box-shadow: 0 8px 24px rgba(56, 142, 60, 0.35) !important;
   transition: all 0.3s ease;
 }
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5) !important;
+  box-shadow: 0 12px 32px rgba(0, 86, 210, 0.45) !important;
 }
 
 /* Tablet Screens (768px - 1024px) */

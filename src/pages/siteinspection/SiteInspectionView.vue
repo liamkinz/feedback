@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useSiteInspection } from './composables/useSiteInspection'
+import { useFeedback } from '@/composables/useFeedback'
 import Respondent from './components/Respondent.vue'
 import CitizenCharter from './components/CitizenCharter.vue'
 import ServiceQuality from './components/ServiceQuality.vue'
 import Comments from './components/Comments.vue'
 import './Styles/SiteInspectionStyles.css'
-import { useFeedback } from '../../db/composables/useFeedback'
 
 const {
   isDark,
@@ -16,28 +16,19 @@ const {
   selectedRatings,
   respondentInfo,
   comments,
+  resetForm,
 } = useSiteInspection()
 
-const { submitSiteInspection } = useFeedback()
+const { submitSiteInspection, sync, isSyncing, unsyncedCount, toast } = useFeedback()
 
 const handleSubmit = async () => {
-  try {
-    await submitSiteInspection({
-      selectedAnswers: selectedAnswers.value,
-      selectedRatings: selectedRatings.value,
-      respondentInfo: respondentInfo.value,
-      comments: comments.value,
-    })
-    alert('Feedback submitted successfully!')
-
-    // Optional: Reset form fields here if needed
-    // selectedAnswers.value = {}
-    // selectedRatings.value = {}
-    // respondentInfo.value = { clientType: '', date: '', sex: '', age: '', contactNumber: '', siteInspections: '' }
-    // comments.value = ''
-  } catch (error) {
-    alert('Failed to submit feedback. Check console for details.')
-  }
+  await submitSiteInspection({
+    selectedAnswers: selectedAnswers.value,
+    selectedRatings: selectedRatings.value,
+    respondentInfo: respondentInfo.value,
+    comments: comments.value,
+  })
+  resetForm()
 }
 </script>
 
@@ -66,7 +57,7 @@ const handleSubmit = async () => {
       <!-- Comments Component -->
       <Comments v-model:comments="comments" />
 
-      <!-- Submit Button -->
+      <!-- Submit + Sync Buttons -->
       <div class="submit-container">
         <v-btn color="primary" size="large" class="submit-btn" @click="handleSubmit">
           Submit Feedback
@@ -74,4 +65,33 @@ const handleSubmit = async () => {
       </div>
     </div>
   </div>
+
+  <!-- Toast Notification -->
+  <v-snackbar
+    v-model="toast.show"
+    :color="toast.color"
+    :timeout="3000"
+    location="top right"
+    rounded="lg"
+    elevation="4"
+  >
+    {{ toast.message }}
+    <template #actions>
+      <v-btn variant="text" @click="toast.show = false"> Close </v-btn>
+    </template>
+  </v-snackbar>
 </template>
+
+<style scoped>
+.survey-title {
+  color: #0f1b2d;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.survey-subtitle {
+  color: #0f1b2d;
+  font-size: 1.125rem;
+  margin-top: 4px;
+}
+</style>

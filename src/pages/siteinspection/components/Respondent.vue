@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTheme } from 'vuetify'
-import type { RespondentInfo } from '../types/siteinspections.type'
+import type { RespondentInfo } from '../types/siteinspection.type'
 
 const props = defineProps<{
   respondentInfo: RespondentInfo
@@ -14,7 +14,7 @@ const isDark = computed(() => theme.global.current.value.dark)
 <template>
   <div>
     <!-- Client Satisfaction Measurement Card -->
-    <v-card class="modern-card" :class="{ 'dark-card': isDark }" elevation="0">
+    <v-card class="modern-card csm-card" :class="{ 'dark-card': isDark }" elevation="0">
       <v-card-text style="padding: 32px">
         <p class="description-text">
           Ang Client Satisfaction Measurement (CSM) nagsubay sa kasinatian sa customer sa mga
@@ -132,62 +132,72 @@ const isDark = computed(() => theme.global.current.value.dark)
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
 .modern-card {
-  background: white !important;
+  background: var(--blue-0) !important;
   border-radius: 16px !important;
   margin-bottom: 24px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 6px 18px rgba(0, 86, 210, 0.12) !important;
+  border: 1px solid var(--blue-200) !important;
   transition:
     box-shadow 0.3s ease,
     transform 0.3s ease;
 }
 
 .dark-card {
-  background: #2d2d44 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: #2c3947 !important;
+  border: 1px solid #2c3947 !important;
+}
+
+.csm-card {
+  background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-200) 100%) !important;
+  border: 1px solid var(--blue-200) !important;
+}
+
+.csm-card.dark-card {
+  background: #000000 !important;
+  border: 1px solid #000000 !important;
 }
 
 .modern-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 10px 28px rgba(0, 86, 210, 0.2) !important;
   transform: translateY(-2px);
 }
 
 .description-text {
   font-size: 20px;
   line-height: 1.8;
-  color: #444;
+  color: var(--ink-700);
   margin: 0;
 }
 
 .dark-card .description-text {
-  color: #e0e0e0;
+  color: #d6d6d6;
 }
 
 .section-title {
   font-family: 'Poppins', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--ink-900);
   margin-bottom: 20px;
   letter-spacing: -0.3px;
 }
 
 .dark-card .section-title {
-  color: #ffffff;
+  color: var(--blue-0);
 }
 
 .field-label {
   font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #333;
+  color: var(--ink-700);
   margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .dark-card .field-label {
-  color: #b0b0b0;
+  color: #a7a7a7;
 }
 
 .modern-input {
@@ -200,11 +210,11 @@ const isDark = computed(() => theme.global.current.value.dark)
 
 .modern-checkbox :deep(.v-label) {
   font-size: 15px !important;
-  color: #555 !important;
+  color: var(--ink-700) !important;
 }
 
 .dark-card .modern-checkbox :deep(.v-label) {
-  color: #d0d0d0 !important;
+  color: #d6d6d6 !important;
 }
 
 .flex-wrap-responsive {

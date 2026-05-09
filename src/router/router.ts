@@ -42,6 +42,10 @@ import LandingView from '../pages/LandingPage/LandingView.vue'
 import SiteInspectionView from '@/pages/siteinspection/SiteInspectionView.vue'
 import SiteInspectionDashboard from '@/pages/siteinspection/components/SiteInspectionDashboard.vue'
 
+// Final Inspection Routes
+import FinalInspectionView from '@/pages/finalinspection/components/FinalInspection.vue'
+import FinalInspectionDashboard from '@/pages/finalinspection/components/FinalInspectionDashboard.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -77,6 +81,18 @@ const router = createRouter({
           path: 'site-inspection/dashboard',
           name: 'site-inspection-dashboard',
           component: SiteInspectionDashboard,
+          meta: { requiresGuest: true },
+        },
+        {
+          path: 'final-inspection',
+          name: 'final-inspection',
+          component: FinalInspectionView,
+          meta: { requiresGuest: true },
+        },
+        {
+          path: 'final-inspection/dashboard',
+          name: 'final-inspection-dashboard',
+          component: FinalInspectionDashboard,
           meta: { requiresGuest: true },
         },
       ],

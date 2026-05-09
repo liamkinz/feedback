@@ -5,9 +5,9 @@ import type {
   RatingQuestion,
   RatingOption,
   RespondentInfo,
-} from '../types/siteinspection.type'
+} from '../types/finalInspection.types'
 
-export function useSiteInspection() {
+export function useFinalInspection() {
   const theme = useTheme()
   const isDark = computed(() => theme.global.current.value.dark)
 
@@ -116,7 +116,7 @@ export function useSiteInspection() {
     sex: '',
     age: '',
     contactNumber: '',
-    siteInspections: '',
+    finalInspection: '',
   })
 
   const comments = ref('')
@@ -129,7 +129,7 @@ export function useSiteInspection() {
       sex: '',
       age: '',
       contactNumber: '',
-      siteInspections: '',
+      finalInspection: '',
     }
     selectedAnswers.value = { CC1: '', CC2: '', CC3: '' }
     selectedRatings.value = {}

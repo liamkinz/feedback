@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTheme } from 'vuetify'
-import type { RatingQuestion, RatingOption } from '../types/siteinspections.type'
+import type { RatingQuestion, RatingOption } from '../types/siteinspection.type'
 
 defineProps<{
   ratingQuestions: RatingQuestion[]
@@ -37,19 +37,16 @@ const isDark = computed(() => theme.global.current.value.dark)
             <span class="sqd-text">{{ question.id }}: {{ question.text }}</span>
           </div>
 
-          <v-radio-group
+          <v-select
             v-model="selectedRatings[question.id]"
-            :name="`rating-${question.id}`"
-            class="rating-group"
-          >
-            <v-radio
-              v-for="option in ratingOptions"
-              :key="option.id"
-              :value="option.id"
-              :label="option.label"
-              class="modern-radio"
-            />
-          </v-radio-group>
+            :items="ratingOptions"
+            item-title="label"
+            item-value="id"
+            label="Select rating"
+            class="modern-select"
+            variant="outlined"
+            hide-details
+          />
         </div>
       </v-card-text>
     </v-card>
@@ -58,70 +55,70 @@ const isDark = computed(() => theme.global.current.value.dark)
 
 <style scoped>
 .modern-card {
-  background: white !important;
+  background: var(--blue-0) !important;
   border-radius: 16px !important;
   margin-bottom: 24px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 6px 18px rgba(0, 86, 210, 0.12) !important;
+  border: 1px solid var(--blue-200) !important;
   transition:
     box-shadow 0.3s ease,
     transform 0.3s ease;
 }
 
 .dark-card {
-  background: #2d2d44 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: var(--card-dark) !important;
+  border: 1px solid var(--card-dark-border) !important;
 }
 
 .modern-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 10px 28px rgba(0, 86, 210, 0.2) !important;
   transform: translateY(-2px);
 }
 
 .info-card {
-  background: linear-gradient(135deg, #f5f7ff 0%, #f8f5ff 100%) !important;
-  border: 1px solid #e8e5f5 !important;
+  background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-200) 100%) !important;
+  border: 1px solid var(--blue-200) !important;
 }
 
 .dark-info-card {
-  background: linear-gradient(135deg, #3a3a5c 0%, #393a5c 100%) !important;
-  border: 1px solid rgba(102, 126, 234, 0.2) !important;
+  background: linear-gradient(135deg, #111111 0%, #1b1b1b 100%) !important;
+  border: 1px solid var(--card-dark-border) !important;
 }
 
 .instructions-title {
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 600;
-  color: #667eea;
+  color: var(--blue-900);
   margin-bottom: 12px;
 }
 
 .dark-info-card .instructions-title {
-  color: #90caf9;
+  color: var(--blue-0);
 }
 
 .instructions-text {
   font-size: 20px;
   line-height: 1.7;
-  color: #555;
+  color: var(--ink-700);
   margin: 0;
 }
 
 .dark-info-card .instructions-text {
-  color: #d0d0d0;
+  color: #d6d6d6;
 }
 
 .section-title {
   font-family: 'Poppins', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--ink-900);
   margin-bottom: 20px;
   letter-spacing: -0.3px;
 }
 
 .dark-card .section-title {
-  color: #ffffff;
+  color: var(--blue-0);
 }
 
 .mb-8 {
@@ -131,11 +128,11 @@ const isDark = computed(() => theme.global.current.value.dark)
 .sqd-item {
   margin-bottom: 28px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid var(--blue-200);
 }
 
 .dark-card .sqd-item {
-  border-bottom: 1px solid #404050;
+  border-bottom: 1px solid var(--card-dark-border);
 }
 
 .sqd-item:last-child {
@@ -156,8 +153,8 @@ const isDark = computed(() => theme.global.current.value.dark)
   justify-content: center;
   min-width: 22px;
   height: 22px;
-  background: #667eea;
-  color: white;
+  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%);
+  color: var(--blue-0);
   border-radius: 50%;
   font-weight: 600;
   font-size: 11px;
@@ -167,33 +164,31 @@ const isDark = computed(() => theme.global.current.value.dark)
 
 .sqd-text {
   font-size: 16px;
-  color: #333;
+  color: var(--ink-700);
   line-height: 1.6;
   font-weight: 500;
 }
 
 .dark-card .sqd-text {
-  color: #d0d0d0;
+  color: #d6d6d6;
 }
 
-.rating-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.modern-select {
   margin-left: 32px;
+  width: calc(100% - 32px);
 }
 
-.modern-radio {
-  margin-bottom: 8px !important;
+.modern-select :deep(.v-label) {
+  color: var(--ink-700) !important;
 }
 
-.modern-radio :deep(.v-label) {
-  font-size: 15px !important;
-  color: #555 !important;
+.modern-select :deep(.v-field__input) {
+  color: var(--ink-700) !important;
 }
 
-.dark-card .modern-radio :deep(.v-label) {
-  color: #d0d0d0 !important;
+.dark-card .modern-select :deep(.v-label),
+.dark-card .modern-select :deep(.v-field__input) {
+  color: #d6d6d6 !important;
 }
 
 /* Mobile Screens (below 768px) */
@@ -228,8 +223,9 @@ const isDark = computed(() => theme.global.current.value.dark)
     gap: 8px;
   }
 
-  .modern-radio :deep(.v-label) {
-    font-size: 13px !important;
+  .modern-select {
+    margin-left: 24px;
+    width: calc(100% - 24px);
   }
 
   .instructions-title {

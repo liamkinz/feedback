@@ -6,9 +6,7 @@
     :size="size"
     @click="toggleTheme"
   >
-    <v-icon :class="{ 'spin-icon': isToggling }">
-      {{ icon }}
-    </v-icon>
+    <span class="toggle-emoji" :class="{ 'spin-icon': isToggling }">{{ icon }}</span>
   </v-btn>
 </template>
 
@@ -31,7 +29,7 @@ withDefaults(defineProps<Props>(), {
 const { isDark, toggleTheme: originalToggleTheme } = useThemeToggle()
 const isToggling = ref(false)
 
-const icon = computed<string>(() => (isDark.value ? 'mdi-weather-sunny' : 'mdi-weather-night'))
+const icon = computed<string>(() => (isDark.value ? '☀️' : '🌙'))
 
 const toggleTheme = async () => {
   isToggling.value = true
@@ -47,6 +45,11 @@ const toggleTheme = async () => {
 .spin-icon {
   animation: spin-rotate 0.6s ease-in-out;
   display: inline-block;
+}
+
+.toggle-emoji {
+  font-size: 18px;
+  line-height: 1;
 }
 
 @keyframes spin-rotate {
