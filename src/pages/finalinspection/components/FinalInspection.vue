@@ -27,7 +27,7 @@ const handleCommentsUpdate = (value: string) => {
   emit('update:comments', value)
 }
 
-const { submitFinalInspection, sync, isSyncing, unsyncedCount, toast } = useFeedback()
+const { submitFinalInspection, toast } = useFeedback()
 
 const handleSubmit = async () => {
   await submitFinalInspection({

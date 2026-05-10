@@ -4,7 +4,8 @@ import { useFeedback } from '@/composables/useFeedback'
 import { getAllLocalFinalInspections } from '@/services/finalInspectionService'
 import type { FinalInspectionFeedback } from '@/db/database'
 
-const { syncFinalInspections, isSyncing, unsyncedCount, toast } = useFeedback()
+const { syncFinalInspections, isSyncingFinalInspections, unsyncedFinalInspectionCount, toast } =
+  useFeedback()
 
 // ── State ──────────────────────────────────────────────────────
 const inspections = ref<FinalInspectionFeedback[]>([])
@@ -115,7 +116,7 @@ onMounted(async () => {
   window.addEventListener('online', async () => {
     isOnline.value = true
     // Auto-sync when connection is restored
-    if (unsyncedCount.value > 0) {
+    if (unsyncedFinalInspectionCount.value > 0) {
       await handleSync()
     }
   })
@@ -138,12 +139,16 @@ onMounted(async () => {
 
         <v-btn
           color="primary"
-          :loading="isSyncing"
-          :disabled="unsyncedCount === 0"
+          :loading="isSyncingFinalInspections"
+          :disabled="unsyncedFinalInspectionCount === 0"
           prepend-icon="mdi-cloud-upload"
           @click="handleSync"
         >
-          {{ isSyncing ? 'Syncing...' : `Sync (${unsyncedCount} pending)` }}
+          {{
+            isSyncingFinalInspections
+              ? 'Syncing...'
+              : `Sync (${unsyncedFinalInspectionCount} pending)`
+          }}
         </v-btn>
       </div>
     </div>
@@ -161,7 +166,7 @@ onMounted(async () => {
       </v-card>
 
       <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
-        <div class="text-h4 font-weight-bold text-warning">{{ unsyncedCount }}</div>
+        <div class="text-h4 font-weight-bold text-warning">{{ unsyncedFinalInspectionCount }}</div>
         <div class="text-body-2 text-medium-emphasis">Pending Sync</div>
       </v-card>
     </div>
