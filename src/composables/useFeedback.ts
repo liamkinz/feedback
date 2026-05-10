@@ -23,6 +23,7 @@ export function useFeedback() {
   const isSyncing = ref(false)
   const isSyncingFinalInspections = ref(false)
   const unsyncedCount = ref(0)
+  const unsyncedFinalInspectionCount = ref(0)
   const syncResult = ref<{ synced: number; failed: number } | null>(null)
   const toast = ref<Toast>({ show: false, message: '', color: 'success' })
 
@@ -136,7 +137,7 @@ export function useFeedback() {
   }
 
   const refreshUnsyncedFinalInspectionCount = async (): Promise<void> => {
-    unsyncedCount.value = await getUnsyncedFinalInspectionCount()
+    unsyncedFinalInspectionCount.value = await getUnsyncedFinalInspectionCount()
   }
 
   // ── Auto-sync when back online ─────────────────────────────
@@ -164,6 +165,7 @@ export function useFeedback() {
     isSyncing,
     isSyncingFinalInspections,
     unsyncedCount,
+    unsyncedFinalInspectionCount,
     syncResult,
     toast,
   }
