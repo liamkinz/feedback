@@ -54,14 +54,11 @@ export function useFeedback() {
       showToast('Feedback saved successfully!', 'success')
 
       if (navigator.onLine) {
-        console.log('🔄 Online detected, attempting to sync final inspections...')
         await syncFinalInspections()
       } else {
-        console.log('📴 Offline - will sync when online')
-        showToast('Will sync when online.', 'info')
+        showToast('Feedback saved locally. Will sync when online.', 'info')
       }
     } catch (error) {
-      console.error('Error saving feedback:', error)
       showToast('Failed to save feedback. Please try again.', 'error')
     }
   }
@@ -77,6 +74,7 @@ export function useFeedback() {
     syncResult.value = null
 
     try {
+      showToast('🚀 Starting site inspection sync...', 'info')
       const result = await syncAllPending()
       syncResult.value = result
 
@@ -100,23 +98,16 @@ export function useFeedback() {
   }
 
   const syncFinalInspections = async (): Promise<void> => {
-    if (isSyncingFinalInspections.value) {
-      console.log('⏳ Final inspection sync already in progress, skipping...')
-      return
-    }
+    if (isSyncingFinalInspections.value) return
 
     const count = await getUnsyncedFinalInspectionCount()
-    console.log(`📊 Unsynced final inspections count: ${count}`)
-    if (count === 0) {
-      console.log('✅ No final inspection records to sync')
-      return
-    }
+    if (count === 0) return
 
     isSyncingFinalInspections.value = true
     syncResult.value = null
 
     try {
-      console.log('🚀 Starting final inspection sync...')
+      showToast('🚀 Starting final inspection sync...', 'info')
       const result = await syncFinalInspectionsPending()
       syncResult.value = result
 
@@ -133,7 +124,6 @@ export function useFeedback() {
 
       await refreshUnsyncedFinalInspectionCount()
     } catch (error) {
-      console.error('❌ Final inspection sync error:', error)
       showToast('❌ Sync error. Please try again.', 'error')
     } finally {
       isSyncingFinalInspections.value = false
@@ -152,18 +142,13 @@ export function useFeedback() {
   // ── Auto-sync when back online ─────────────────────────────
 
   const syncAll = async (): Promise<void> => {
-    console.log('🌐 Online event detected!')
-    console.log('Checking site inspections...')
     await sync()
-    console.log('Checking final inspections...')
     await syncFinalInspections()
-    console.log('✅ Auto-sync completed')
   }
 
   onMounted(async () => {
     await refreshUnsyncedCount()
     await refreshUnsyncedFinalInspectionCount()
-    console.log('📍 useFeedback mounted, attaching online listener...')
     window.addEventListener('online', syncAll)
   })
 
