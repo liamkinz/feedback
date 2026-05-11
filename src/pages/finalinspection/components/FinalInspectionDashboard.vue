@@ -141,7 +141,7 @@ onMounted(async () => {
           color="primary"
           :loading="isSyncingFinalInspections"
           :disabled="unsyncedFinalInspectionCount === 0"
-          prepend-icon="mdi-cloud-upload"
+          prepend-icon="$cloudUpload"
           @click="handleSync"
         >
           {{
@@ -180,7 +180,7 @@ onMounted(async () => {
           <v-text-field
             v-model="search"
             placeholder="Search inspections..."
-            prepend-inner-icon="mdi-magnify"
+            prepend-inner-icon="$magnify"
             variant="outlined"
             density="compact"
             hide-details
@@ -195,7 +195,7 @@ onMounted(async () => {
                 v-bind="props"
                 variant="outlined"
                 :color="dateRange.length ? 'primary' : 'default'"
-                prepend-icon="mdi-calendar-range"
+                prepend-icon="$calendarRange"
               >
                 {{ dateRangeText }}
               </v-btn>

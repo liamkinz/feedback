@@ -9,6 +9,7 @@ const navLinks = [
   { title: 'Internal', href: '/internal' },
   { title: 'Final Inspection', href: '/final-inspection' },
   { title: 'Site Inspection', href: '/site-inspection' },
+  { title: 'Annual Inspection', href: '/annual-inspection' },
   { title: 'Contact', href: '#' },
 ]
 
