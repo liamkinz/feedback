@@ -46,6 +46,10 @@ import SiteInspectionDashboard from '@/pages/siteinspection/components/SiteInspe
 import FinalInspectionView from '@/pages/finalinspection/components/FinalInspection.vue'
 import FinalInspectionDashboard from '@/pages/finalinspection/components/FinalInspectionDashboard.vue'
 
+// Annual Inspection Routes
+import AnnualInspectionView from '@/pages/annualinspection/components/AnnualInspection.vue'
+import AnnualInspectionDashboard from '@/pages/annualinspection/components/AnnualInspectionDashboard.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -93,6 +97,18 @@ const router = createRouter({
           path: 'final-inspection/dashboard',
           name: 'final-inspection-dashboard',
           component: FinalInspectionDashboard,
+          meta: { requiresGuest: true },
+        },
+        {
+          path: 'annual-inspection',
+          name: 'annual-inspection',
+          component: AnnualInspectionView,
+          meta: { requiresGuest: true },
+        },
+        {
+          path: 'annual-inspection/dashboard',
+          name: 'annual-inspection-dashboard',
+          component: AnnualInspectionDashboard,
           meta: { requiresGuest: true },
         },
       ],
