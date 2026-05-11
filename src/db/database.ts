@@ -1,6 +1,7 @@
 import Dexie, { type Table } from 'dexie'
 import type { RespondentInfo } from '../pages/siteinspection/types/siteinspection.type'
 import type { RespondentInfo as FinalInspectionRespondentInfo } from '../pages/finalinspection/types/finalInspection.types'
+import type { RespondentInfoAnnualInspection as AnnualInspectionRespondentInfo } from '../pages/annualinspection/types/annualInspection.types'
 
 export interface SiteInspectionFeedback {
   id?: number
@@ -22,9 +23,20 @@ export interface FinalInspectionFeedback {
   createdAt: string
 }
 
+export interface AnnualInspectionFeedback {
+  id?: number
+  selectedAnswers: { [key: string]: string }
+  selectedRatings: { [key: string]: string }
+  respondentInfo: AnnualInspectionRespondentInfo
+  comments: string
+  synced: number
+  createdAt: string
+}
+
 class FeedbackDatabase extends Dexie {
   siteInspections!: Table<SiteInspectionFeedback>
   finalInspections!: Table<FinalInspectionFeedback>
+  annualInspections!: Table<AnnualInspectionFeedback>
 
   constructor() {
     super('FeedbackDB') // this is the IndexedDB database name

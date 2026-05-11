@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
-import { getAllLocalFinalInspections } from '@/services/finalInspectionService'
-import type { FinalInspectionFeedback } from '@/db/database'
+import { getAllLocalAnnualInspections } from '@/services/annualInspectionService'
+import type { AnnualInspectionFeedback } from '@/db/database'
 
-const { syncFinalInspections, isSyncingFinalInspections, unsyncedFinalInspectionCount, toast } =
+const { syncAnnualInspections, isSyncingAnnualInspections, unsyncedAnnualInspectionCount, toast } =
   useFeedback()
 
 // ── State ──────────────────────────────────────────────────────
-const inspections = ref<FinalInspectionFeedback[]>([])
+const inspections = ref<AnnualInspectionFeedback[]>([])
 const loading = ref(true)
 const isOnline = ref(navigator.onLine)
 const search = ref('')
@@ -98,7 +98,7 @@ const totalCount = computed(() => inspections.value.length)
 const fetchInspections = async () => {
   loading.value = true
   try {
-    inspections.value = await getAllLocalFinalInspections()
+    inspections.value = await getAllLocalAnnualInspections()
   } finally {
     loading.value = false
   }
@@ -106,7 +106,7 @@ const fetchInspections = async () => {
 
 // ── Sync + Refresh ─────────────────────────────────────────────
 const handleSync = async () => {
-  await syncFinalInspections()
+  await syncAnnualInspections()
   await fetchInspections()
 }
 
@@ -116,7 +116,7 @@ onMounted(async () => {
   window.addEventListener('online', async () => {
     isOnline.value = true
     // Auto-sync when connection is restored
-    if (unsyncedFinalInspectionCount.value > 0) {
+    if (unsyncedAnnualInspectionCount.value > 0) {
       await handleSync()
     }
   })
@@ -130,7 +130,7 @@ onMounted(async () => {
   <v-container fluid class="d-flex flex-column align-center">
     <!-- Header Row -->
     <div class="d-flex align-center justify-space-between w-100 mb-4" style="max-width: 1400px">
-      <h1>Final Inspections Dashboard</h1>
+      <h1>Annual Inspections Dashboard</h1>
 
       <div class="d-flex align-center ga-3">
         <v-chip :color="isOnline ? 'success' : 'error'" size="small">
@@ -139,15 +139,15 @@ onMounted(async () => {
 
         <v-btn
           color="primary"
-          :loading="isSyncingFinalInspections"
-          :disabled="unsyncedFinalInspectionCount === 0"
+          :loading="isSyncingAnnualInspections"
+          :disabled="unsyncedAnnualInspectionCount === 0"
           prepend-icon="$cloudUpload"
           @click="handleSync"
         >
           {{
-            isSyncingFinalInspections
+            isSyncingAnnualInspections
               ? 'Syncing...'
-              : `Sync (${unsyncedFinalInspectionCount} pending)`
+              : `Sync (${unsyncedAnnualInspectionCount} pending)`
           }}
         </v-btn>
       </div>
@@ -166,7 +166,7 @@ onMounted(async () => {
       </v-card>
 
       <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
-        <div class="text-h4 font-weight-bold text-warning">{{ unsyncedFinalInspectionCount }}</div>
+        <div class="text-h4 font-weight-bold text-warning">{{ unsyncedAnnualInspectionCount }}</div>
         <div class="text-body-2 text-medium-emphasis">Pending Sync</div>
       </v-card>
     </div>

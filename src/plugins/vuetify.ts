@@ -1,7 +1,7 @@
 import 'vuetify/styles'
 import { createVuetify, type ThemeDefinition } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
-// import '@mdi/font/css/materialdesignicons.css' // ← or import here instead of main.ts
+import '@mdi/font/css/materialdesignicons.css' // ← or import here instead of main.ts
 import {
   mdiCheckboxMarked,
   mdiCheckboxBlankOutline,
@@ -12,6 +12,9 @@ import {
   mdiMenuDown,
   mdiCloseCircle,
   mdiClose,
+  mdiCloudUpload,
+  mdiMagnify,
+  mdiCalendarRange,
 } from '@mdi/js'
 
 const lightTheme: ThemeDefinition = {
@@ -65,6 +68,9 @@ export const vuetify = createVuetify({
       expand: mdiChevronDown,
       clear: mdiCloseCircle,
       close: mdiClose,
+      cloudUpload: mdiCloudUpload, // ← for upload buttons
+      magnify: mdiMagnify, // ← for search buttons
+      calendarRange: mdiCalendarRange, // ← for date range buttons
     },
     sets: { mdi },
   },
