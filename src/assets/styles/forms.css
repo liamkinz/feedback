@@ -1,9 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
-.final-inspection-form {
+.csmr-inspection-form {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
+  padding: 24px;
+}
+.form-background {
+  min-height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+}
+
+.form-content {
+  width: 100%;
+  max-width: 900px;
   padding: 24px;
 }
 
@@ -324,7 +339,7 @@
   font-weight: 600;
   font-size: 16px;
   text-transform: none;
-  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%) !important;
+  background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-900) 100%) !important;
   box-shadow: 0 6px 18px rgba(0, 86, 210, 0.3) !important;
   transition:
     box-shadow 0.3s ease,
@@ -351,7 +366,7 @@
 
 /* Mobile Screens (below 768px) */
 @media (max-width: 768px) {
-  .final-inspection-form {
+  .csmr-inspection-form {
     padding: 16px;
   }
 
