@@ -8,7 +8,9 @@ import { RouterView } from 'vue-router'
   <div class="layout-wrapper">
     <OuterNavbar />
     <v-main class="main-content">
-      <RouterView />
+      <div class="router-wrapper">
+        <RouterView />
+      </div>
     </v-main>
     <Footer />
   </div>
@@ -18,12 +20,29 @@ import { RouterView } from 'vue-router'
 .layout-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
 }
 
 .main-content {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
   width: 100%;
+}
+
+/* Force Vuetify's internal wrapper to also stretch */
+.main-content :deep(.v-main__wrap) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  height: 100%;
+}
+
+.router-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  height: 100%;
 }
 </style>

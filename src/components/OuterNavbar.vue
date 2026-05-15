@@ -16,8 +16,8 @@ const navLinks = [
   { title: 'Home', path: '/', icon: 'mdi-home-outline' },
   { title: 'Dashboard', path: '/dashboard', icon: 'mdi-view-dashboard-outline' },
   { title: 'Internal', path: '/internal', icon: 'mdi-office-building-outline' },
-  { title: 'Final Inspection', path: '/final-inspection', icon: 'mdi-clipboard-check-outline' },
   { title: 'Site Inspection', path: '/site-inspection', icon: 'mdi-map-marker-outline' },
+  { title: 'Final Inspection', path: '/final-inspection', icon: 'mdi-clipboard-check-outline' },
   { title: 'Annual Inspection', path: '/annual-inspection', icon: 'mdi-calendar-check-outline' },
   { title: 'Contact', path: '/contact', icon: 'mdi-email-outline' },
 ]
@@ -155,13 +155,13 @@ const toggleDrawer = () => {
 
 /* Light mode — vivid cyan-to-blue gradient */
 .outer-navbar--light {
-  background: linear-gradient(90deg, #56dbfe 0%, #15598e 100%) !important;
+  background: linear-gradient(90deg, #21a0d8 0%, #15598e 100%) !important;
   border-bottom: 1px solid rgba(79, 142, 247, 0.2) !important;
 }
 
 /* Dark mode — deep navy gradient */
 .outer-navbar--dark {
-  background: linear-gradient(90deg, #0d1b2a 0%, #1a2e5a 100%) !important;
+  background: linear-gradient(90deg, #0d1b2a 0%, #21a0d8 100%) !important;
   border-bottom: 1px solid rgba(79, 142, 247, 0.15) !important;
 }
 
@@ -220,7 +220,7 @@ const toggleDrawer = () => {
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--nav-text);
+  color: #ffffff !important;
   cursor: pointer;
   letter-spacing: 0.2px;
   transition:
@@ -230,7 +230,7 @@ const toggleDrawer = () => {
 }
 
 .nav-link:hover {
-  color: var(--nav-text-hover);
+  color: #ffffff !important;
   background: rgba(255, 255, 255, 0.08);
 }
 
