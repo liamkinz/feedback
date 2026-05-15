@@ -1,21 +1,9 @@
 import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify, type ThemeDefinition } from 'vuetify'
-import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
-import '@mdi/font/css/materialdesignicons.css' // ← or import here instead of main.ts
-import {
-  mdiCheckboxMarked,
-  mdiCheckboxBlankOutline,
-  mdiMinusBox,
-  mdiRadioboxMarked,
-  mdiRadioboxBlank,
-  mdiChevronDown,
-  mdiMenuDown,
-  mdiCloseCircle,
-  mdiClose,
-  mdiCloudUpload,
-  mdiMagnify,
-  mdiCalendarRange,
-} from '@mdi/js'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
+
+// ─── Theme Definitions ────────────────────────────────────────────────────────
 
 const lightTheme: ThemeDefinition = {
   dark: false,
@@ -47,6 +35,8 @@ const darkTheme: ThemeDefinition = {
   },
 }
 
+// ─── Vuetify Instance ─────────────────────────────────────────────────────────
+
 export const vuetify = createVuetify({
   theme: {
     defaultTheme: 'light',
@@ -55,31 +45,27 @@ export const vuetify = createVuetify({
       dark: darkTheme,
     },
   },
+
   icons: {
     defaultSet: 'mdi',
-    aliases: {
-      ...aliases,
-      checkboxOn: mdiCheckboxMarked, // ← v-checkbox checked state
-      checkboxOff: mdiCheckboxBlankOutline, // ← v-checkbox unchecked state
-      checkboxIndeterminate: mdiMinusBox,
-      radioOn: mdiRadioboxMarked, // ← v-radio selected state
-      radioOff: mdiRadioboxBlank, // ← v-radio unselected state
-      dropdown: mdiMenuDown,
-      expand: mdiChevronDown,
-      clear: mdiCloseCircle,
-      close: mdiClose,
-      cloudUpload: mdiCloudUpload, // ← for upload buttons
-      magnify: mdiMagnify, // ← for search buttons
-      calendarRange: mdiCalendarRange, // ← for date range buttons
-    },
+    aliases,
     sets: { mdi },
   },
+
   defaults: {
     VBtn: {
       variant: 'elevated',
       rounded: 'md',
     },
     VTextField: {
+      variant: 'outlined',
+      density: 'comfortable',
+    },
+    VSelect: {
+      variant: 'outlined',
+      density: 'comfortable',
+    },
+    VTextarea: {
       variant: 'outlined',
       density: 'comfortable',
     },

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTheme } from 'vuetify'
-import { useFinalInspection } from '../composables/useFinalInspection'
+import { useSiteInspection } from '../composables/useSiteInspection'
 import { useFeedback } from '@/composables/useFeedback'
 import FormLayout from '@/layouts/FormLayout.vue'
 
@@ -21,16 +21,16 @@ const {
   selectedRatings,
   comments,
   resetForm,
-} = useFinalInspection()
+} = useSiteInspection()
 
 const handleCommentsUpdate = (value: string) => {
   emit('update:comments', value)
 }
 
-const { submitFinalInspection, toast } = useFeedback()
+const { submitSiteInspection, toast } = useFeedback()
 
 const handleSubmit = async () => {
-  await submitFinalInspection({
+  await submitSiteInspection({
     selectedAnswers: selectedAnswers.value,
     selectedRatings: selectedRatings.value,
     respondentInfo: respondentInfo.value,
@@ -46,7 +46,7 @@ const handleSubmit = async () => {
       <!-- Header -->
       <v-card class="modern-card header-card" :class="{ 'dark-card': isDark }" elevation="0">
         <v-card-text style="padding: 32px">
-          <h1 class="form-title">Final Inspection Feedback Form</h1>
+          <h1 class="form-title">Site Inspection Feedback Form</h1>
           <p class="form-subtitle">
             Salamat sa inyong pagbisita. Ang inyong feedback ay mahalaga sa amin upang mapabuti pa
             ang aming serbisyo.
@@ -154,13 +154,13 @@ const handleSubmit = async () => {
           </v-card-text>
         </v-card>
 
-        <!-- Number of Final Inspections -->
+        <!-- Number of Site Inspections -->
         <v-card class="modern-card" :class="{ 'dark-card': isDark }" elevation="0">
           <v-card-text style="padding: 24px">
-            <h3 class="section-title">Number of Final Inspections</h3>
+            <h3 class="section-title">Number of Site Inspections</h3>
             <v-text-field
-              v-model="respondentInfo.finalInspection"
-              label="Number of Final Inspections"
+              v-model="respondentInfo.siteInspections"
+              label="Number of Site Inspections"
               type="number"
               hide-details
               class="modern-input"

@@ -5,7 +5,7 @@
 <template>
   <v-footer
     class="d-flex align-center justify-center ga-2 flex-wrap"
-    color="surface-light"
+    color="#2FA8E0"
     style="padding: 12px; flex: 0 0 auto"
   >
     <!-- <v-btn v-for="link in links" :key="link" :text="link" variant="text" rounded></v-btn> -->
