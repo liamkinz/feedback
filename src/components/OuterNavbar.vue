@@ -3,7 +3,6 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTheme } from 'vuetify'
 import ThemeToggle from '@/components/ThemeToggle.vue'
-import Auth from '@/pages/auth/Auth.vue'
 
 const router = useRouter()
 const route = useRoute()
