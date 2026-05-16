@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTheme } from 'vuetify'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import Auth from '@/pages/auth/Auth.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -13,13 +14,13 @@ const isDrawerOpen = ref(false)
 const isDark = computed(() => theme.global.current.value.dark)
 
 const navLinks = [
-  { title: 'Home', path: '/', icon: 'mdi-home-outline' },
-  { title: 'Dashboard', path: '/dashboard', icon: 'mdi-view-dashboard-outline' },
-  { title: 'Internal', path: '/internal', icon: 'mdi-office-building-outline' },
-  { title: 'Site Inspection', path: '/site-inspection', icon: 'mdi-map-marker-outline' },
-  { title: 'Final Inspection', path: '/final-inspection', icon: 'mdi-clipboard-check-outline' },
-  { title: 'Annual Inspection', path: '/annual-inspection', icon: 'mdi-calendar-check-outline' },
-  { title: 'Contact', path: '/contact', icon: 'mdi-email-outline' },
+  { title: 'Home', path: '/', icon: '$homeOutline' },
+  { title: 'Dashboard', path: '/dashboard', icon: '$viewDashboardOutline' },
+  { title: 'Internal', path: '/internal', icon: '$officeBuildingOutline' },
+  { title: 'Site Inspection', path: '/site-inspection', icon: '$mapMarkerOutline' },
+  { title: 'Final Inspection', path: '/final-inspection', icon: '$clipboardCheckOutline' },
+  { title: 'Annual Inspection', path: '/annual-inspection', icon: '$calendarCheckOutline' },
+  { title: 'Contact', path: '/contact', icon: '$emailOutline' },
 ]
 
 const isActive = (path: string) => route.path === path
@@ -30,7 +31,7 @@ const navigateTo = (path: string) => {
 }
 
 const handleGetStarted = () => {
-  router.push('/dashboard')
+  router.push('/Auth')
   isDrawerOpen.value = false
 }
 
@@ -49,7 +50,7 @@ const toggleDrawer = () => {
     <!-- Mobile Hamburger -->
     <template #prepend>
       <v-btn icon class="hamburger-btn hidden-md-and-up" @click.stop="toggleDrawer">
-        <v-icon>{{ isDrawerOpen ? 'mdi-close' : 'mdi-menu' }}</v-icon>
+        <v-icon>{{ isDrawerOpen ? '$close' : '$menu' }}</v-icon>
       </v-btn>
     </template>
 
@@ -82,7 +83,7 @@ const toggleDrawer = () => {
       <ThemeToggle />
       <button class="cta-btn hidden-sm-and-down" @click="handleGetStarted">
         Get Started
-        <v-icon size="16" class="ml-1">mdi-arrow-right</v-icon>
+        <v-icon size="16" class="ml-1">$arrowRight</v-icon>
       </button>
     </div>
   </v-app-bar>
@@ -116,7 +117,7 @@ const toggleDrawer = () => {
       >
         <v-icon size="18" class="drawer-link-icon">{{ link.icon }}</v-icon>
         <span>{{ link.title }}</span>
-        <v-icon size="16" class="drawer-link-arrow">mdi-chevron-right</v-icon>
+        <v-icon size="16" class="drawer-link-arrow">$chevronRight</v-icon>
       </button>
     </nav>
 
@@ -124,7 +125,7 @@ const toggleDrawer = () => {
     <template #append>
       <div class="drawer-footer">
         <button variant="outlined" class="drawer-cta-btn" @click="handleGetStarted">
-          <v-icon size="18" class="mr-2">mdi-rocket-launch-outline</v-icon>
+          <v-icon size="18" class="mr-2">$rocketLaunchOutline</v-icon>
           Get Started
         </button>
       </div>
