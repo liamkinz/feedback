@@ -31,7 +31,7 @@ const navigateTo = (path: string) => {
 }
 
 const handleGetStarted = () => {
-  router.push('/Auth')
+  router.push('/dashboard')
   isDrawerOpen.value = false
 }
 
