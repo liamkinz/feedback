@@ -32,8 +32,8 @@ const toggleTheme = () => {
 
       <!-- Thumb (the sliding circle) -->
       <span class="toggle-thumb" :class="{ 'is-animating': isAnimating }">
-        <v-icon class="thumb-icon thumb-icon--sun" size="13">mdi-white-balance-sunny</v-icon>
-        <v-icon class="thumb-icon thumb-icon--moon" size="13">mdi-moon-waning-crescent</v-icon>
+        <v-icon class="thumb-icon thumb-icon--sun" size="13">$whiteBalanceSunny</v-icon>
+        <v-icon class="thumb-icon thumb-icon--moon" size="13">$weatherNight</v-icon>
       </span>
     </span>
   </button>
