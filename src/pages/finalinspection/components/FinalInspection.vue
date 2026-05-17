@@ -8,10 +8,6 @@ import FormLayout from '@/layouts/FormLayout.vue'
 const theme = useTheme()
 const isDark = computed(() => theme.global.current.value.dark)
 
-const emit = defineEmits<{
-  'update:comments': [value: string]
-}>()
-
 const {
   questions,
   ratingQuestions,
@@ -22,10 +18,6 @@ const {
   comments,
   resetForm,
 } = useFinalInspection()
-
-const handleCommentsUpdate = (value: string) => {
-  emit('update:comments', value)
-}
 
 const { submitFinalInspection, toast } = useFeedback()
 
@@ -261,8 +253,7 @@ const handleSubmit = async () => {
               sa among serbisyo. (Opsyonal)
             </p>
             <v-textarea
-              :model-value="comments"
-              @update:model-value="handleCommentsUpdate"
+              v-model="comments"
               label="Palihug ibahagi ang inyong dagdag na feedback o komento (Opsyonal)"
               placeholder="I-type ang inyong mga komento dito..."
               hide-details
