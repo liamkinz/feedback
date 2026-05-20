@@ -51,6 +51,19 @@
   --ink-900: #111827;
 }
 
+/* New */
+.pdf-export-mode * {
+  color-scheme: light !important;
+}
+
+.pdf-export-mode {
+  --v-theme-primary: 25, 118, 210 !important;
+  --v-theme-surface: 255, 255, 255 !important;
+  --v-theme-background: 255, 255, 255 !important;
+  --v-theme-on-surface: 0, 0, 0 !important;
+}
+/* New */
+
 /* ─── Dark Mode Token Overrides ──────────────────────────────────────────── */
 .v-theme--dark {
   --blue-900: #90caf9;

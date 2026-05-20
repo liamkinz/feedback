@@ -20,7 +20,7 @@ export default defineConfig({
         suppressWarnings: true,
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,pdf}'],
         navigateFallback: 'index.html',
         runtimeCaching: [
           {

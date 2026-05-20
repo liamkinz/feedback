@@ -32,6 +32,8 @@ import {
   mdiRocketLaunchOutline,
   mdiEye,
   mdiEyeOff,
+  mdiFilePdfBox,
+  mdiCalendarSearch,
 } from '@mdi/js'
 
 // ─── Theme Definitions ────────────────────────────────────────────────────────
@@ -115,6 +117,10 @@ export const vuetify = createVuetify({
       //Auth
       eye: mdiEye,
       eyeOff: mdiEyeOff,
+
+      //Exporting PDF
+      filePdfBox: mdiFilePdfBox,
+      calendarSearch: mdiCalendarSearch,
     },
     sets: { mdi },
   },

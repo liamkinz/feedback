@@ -14,16 +14,10 @@ import {
   syncAnnualInspectionsPending,
   getUnsyncedAnnualInspectionCount,
 } from '@/services/annualInspectionService'
+import { useToast } from '@/composables/useToast'
 import type { SurveyState } from '@/pages/siteinspection/types/siteinspection.type'
 import type { SurveyState as FinalInspection } from '@/pages/finalinspection/types/finalInspection.types'
 import type { SurveyState as AnnualInspection } from '@/pages/annualinspection/types/annualInspection.types'
-
-// ── Toast Type ─────────────────────────────────────────────────
-interface Toast {
-  show: boolean
-  message: string
-  color: 'success' | 'error' | 'warning' | 'info'
-}
 
 export function useFeedback() {
   const isSyncing = ref(false)
@@ -33,12 +27,7 @@ export function useFeedback() {
   const unsyncedFinalInspectionCount = ref(0)
   const unsyncedAnnualInspectionCount = ref(0)
   const syncResult = ref<{ synced: number; failed: number } | null>(null)
-  const toast = ref<Toast>({ show: false, message: '', color: 'success' })
-
-  // ── Toast Helper ───────────────────────────────────────────
-  const showToast = (message: string, color: Toast['color'] = 'success') => {
-    toast.value = { show: true, message, color }
-  }
+  const { toast, showToast } = useToast()
 
   // ── Save to Dexie ──────────────────────────────────────────
   const submitSiteInspection = async (data: SurveyState): Promise<void> => {
