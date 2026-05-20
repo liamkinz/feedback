@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
+import { usePDFExport } from '@/composables/usePDFExport'
+import { useToast } from '@/composables/useToast'
 import { getAllLocalInspections } from '@/services/siteInspectionService'
 import type { SiteInspectionFeedback } from '@/db/database'
 
-const { sync, isSyncing, unsyncedCount, toast } = useFeedback()
+const { sync, isSyncing, unsyncedCount } = useFeedback()
+const { toast, showToast } = useToast()
+const { isExporting, exportingId, handleExport } =
+  usePDFExport<SiteInspectionFeedback>('SiteInspection')
 
 // ── State ──────────────────────────────────────────────────────
 const inspections = ref<SiteInspectionFeedback[]>([])
@@ -14,18 +19,29 @@ const search = ref('')
 
 // ── Date Range Filter ──────────────────────────────────────────
 const dateMenu = ref(false)
-const dateRange = ref<string[]>([])
+const dateRange = ref<Date[]>([])
 
 const dateRangeText = computed(() => {
   if (dateRange.value.length === 0) return 'All Dates'
-  if (dateRange.value.length === 1) return formatDate(dateRange.value[0]!)
 
-  const sorted = [...dateRange.value].sort()
-  return `${formatDate(sorted[0]!)} — ${formatDate(sorted[sorted.length - 1]!)}`
+  // ✅ Add fallback with ?? to satisfy TypeScript
+  if (dateRange.value.length === 1) {
+    return formatDate(dateRange.value[0]!) // ← non-null assertion
+  }
+
+  const sorted = [...dateRange.value].sort((a, b) => a.getTime() - b.getTime())
+
+  // ✅ Destructure with fallback
+  const first = sorted[0]
+  const last = sorted[sorted.length - 1]
+
+  if (!first || !last) return 'All Dates'
+
+  return `${formatDate(first)} — ${formatDate(last)}`
 })
 
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -37,58 +53,58 @@ function clearDateRange() {
   dateMenu.value = false
 }
 
-function applyDateRange() {
-  dateMenu.value = false
-}
-
-// ── Filtered Inspections ───────────────────────────────────────
+// ── Filtered Data ──────────────────────────────────────────────
 const filteredInspections = computed(() => {
   if (dateRange.value.length < 2) return inspections.value
 
-  const sorted = [...dateRange.value].sort()
-  const startDate = new Date(sorted[0]!)
-  const endDate = new Date(sorted[sorted.length - 1]!)
+  // ← sort Date objects properly
+  const sorted = [...dateRange.value].sort((a, b) => a.getTime() - b.getTime())
+  const startDate = sorted[0]
+  const lastDate = sorted[sorted.length - 1]
 
-  // Set end date to end of day
+  if (!startDate || !lastDate) return inspections.value
+
+  const endDate = new Date(lastDate)
   endDate.setHours(23, 59, 59, 999)
 
   return inspections.value.filter((item) => {
     if (!item.respondentInfo?.date) return false
-    const itemDate = new Date(item.respondentInfo.date)
-    return itemDate >= startDate && itemDate <= endDate
+    const d = new Date(item.respondentInfo.date)
+    return d >= startDate && d <= endDate
   })
 })
 
 // ── Headers ────────────────────────────────────────────────────
 const headers = [
-  { title: 'ID', key: 'id', width: '60px' },
-  { title: 'Date', key: 'respondentInfo.date', width: '110px' },
-  { title: 'Client Type', key: 'respondentInfo.clientType', width: '120px' },
-  { title: 'Sex', key: 'respondentInfo.sex', width: '70px' },
-  { title: 'Age', key: 'respondentInfo.age', width: '70px' },
-  { title: 'Contact', key: 'respondentInfo.contactNumber', width: '120px' },
+  { title: 'ID', key: 'id', width: '55px' },
+  { title: 'Date', key: 'respondentInfo.date', width: '100px' },
+  { title: 'Client Type', key: 'respondentInfo.clientType', width: '110px' },
+  { title: 'Sex', key: 'respondentInfo.sex', width: '65px' },
+  { title: 'Age', key: 'respondentInfo.age', width: '60px' },
+  { title: 'Contact', key: 'respondentInfo.contactNumber', width: '110px' },
   { title: 'Site', key: 'respondentInfo.siteInspections', width: '100px' },
-  { title: 'CC1', key: 'selectedAnswers.CC1', width: '60px' },
-  { title: 'CC2', key: 'selectedAnswers.CC2', width: '60px' },
-  { title: 'CC3', key: 'selectedAnswers.CC3', width: '60px' },
-  { title: 'SQD0', key: 'selectedRatings.SQD0', width: '70px' },
-  { title: 'SQD1', key: 'selectedRatings.SQD1', width: '70px' },
-  { title: 'SQD2', key: 'selectedRatings.SQD2', width: '70px' },
-  { title: 'SQD3', key: 'selectedRatings.SQD3', width: '70px' },
-  { title: 'SQD4', key: 'selectedRatings.SQD4', width: '70px' },
-  { title: 'SQD5', key: 'selectedRatings.SQD5', width: '70px' },
-  { title: 'SQD6', key: 'selectedRatings.SQD6', width: '70px' },
-  { title: 'SQD7', key: 'selectedRatings.SQD7', width: '70px' },
-  { title: 'SQD8', key: 'selectedRatings.SQD8', width: '70px' },
-  { title: 'Comments', key: 'comments', width: '180px' },
-  { title: 'Synced', key: 'synced', width: '90px' },
+  { title: 'CC1', key: 'selectedAnswers.CC1', width: '55px' },
+  { title: 'CC2', key: 'selectedAnswers.CC2', width: '55px' },
+  { title: 'CC3', key: 'selectedAnswers.CC3', width: '55px' },
+  { title: 'SQD0', key: 'selectedRatings.SQD0', width: '65px' },
+  { title: 'SQD1', key: 'selectedRatings.SQD1', width: '65px' },
+  { title: 'SQD2', key: 'selectedRatings.SQD2', width: '65px' },
+  { title: 'SQD3', key: 'selectedRatings.SQD3', width: '65px' },
+  { title: 'SQD4', key: 'selectedRatings.SQD4', width: '65px' },
+  { title: 'SQD5', key: 'selectedRatings.SQD5', width: '65px' },
+  { title: 'SQD6', key: 'selectedRatings.SQD6', width: '65px' },
+  { title: 'SQD7', key: 'selectedRatings.SQD7', width: '65px' },
+  { title: 'SQD8', key: 'selectedRatings.SQD8', width: '65px' },
+  { title: 'Comments', key: 'comments', width: '160px' },
+  { title: 'Synced', key: 'synced', width: '85px' },
+  { title: 'Export', key: 'actions', width: '85px', sortable: false },
 ] as const
 
-// ── Computed Summary ───────────────────────────────────────────
+// ── Summary ────────────────────────────────────────────────────
 const syncedCount = computed(() => inspections.value.filter((i) => i.synced === 1).length)
 const totalCount = computed(() => inspections.value.length)
 
-// ── Fetch Data ─────────────────────────────────────────────────
+// ── Fetch ──────────────────────────────────────────────────────
 const fetchInspections = async () => {
   loading.value = true
   try {
@@ -98,13 +114,11 @@ const fetchInspections = async () => {
   }
 }
 
-// ── Sync + Refresh ─────────────────────────────────────────────
 const handleSync = async () => {
   await sync()
   await fetchInspections()
 }
 
-// ── Lifecycle ──────────────────────────────────────────────────
 onMounted(async () => {
   await fetchInspections()
   window.addEventListener('online', () => {
@@ -118,20 +132,18 @@ onMounted(async () => {
 
 <template>
   <v-container fluid class="d-flex flex-column align-center">
-    <!-- Header Row -->
+    <!-- Header -->
     <div class="d-flex align-center justify-space-between w-100 mb-4" style="max-width: 1400px">
       <h1>Site Inspections Dashboard</h1>
-
       <div class="d-flex align-center ga-3">
         <v-chip :color="isOnline ? 'success' : 'error'" size="small">
           {{ isOnline ? '🟢 Online' : '🔴 Offline' }}
         </v-chip>
-
         <v-btn
           color="primary"
           :loading="isSyncing"
           :disabled="unsyncedCount === 0"
-          prepend-icon="mdi-cloud-upload"
+          prepend-icon="$cloudUpload"
           @click="handleSync"
         >
           {{ isSyncing ? 'Syncing...' : `Sync (${unsyncedCount} pending)` }}
@@ -145,28 +157,25 @@ onMounted(async () => {
         <div class="text-h4 font-weight-bold text-primary">{{ totalCount }}</div>
         <div class="text-body-2 text-medium-emphasis">Total Records</div>
       </v-card>
-
       <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
         <div class="text-h4 font-weight-bold text-success">{{ syncedCount }}</div>
         <div class="text-body-2 text-medium-emphasis">Synced</div>
       </v-card>
-
       <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
         <div class="text-h4 font-weight-bold text-warning">{{ unsyncedCount }}</div>
         <div class="text-body-2 text-medium-emphasis">Pending Sync</div>
       </v-card>
     </div>
 
-    <!-- Data Table -->
-    <v-card class="w-100 dashboard-card" style="max-width: 1400px">
-      <!-- Toolbar: Search + Date Range -->
+    <!-- Table Card -->
+    <v-card class="w-100 dashboard-card4" style="max-width: 1400px; margin-top: 16px">
+      <!-- Toolbar -->
       <v-card-title class="pa-4">
         <div class="d-flex align-center ga-3 flex-wrap">
-          <!-- Search -->
           <v-text-field
             v-model="search"
             placeholder="Search inspections..."
-            prepend-inner-icon="mdi-magnify"
+            prepend-inner-icon="$magnify"
             variant="outlined"
             density="compact"
             hide-details
@@ -174,24 +183,22 @@ onMounted(async () => {
             style="max-width: 280px"
           />
 
-          <!-- Date Range Picker -->
+          <!-- Date Range -->
           <v-menu v-model="dateMenu" :close-on-content-click="false" location="bottom start">
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
                 variant="outlined"
                 :color="dateRange.length ? 'primary' : 'default'"
-                prepend-icon="mdi-calendar-range"
+                prepend-icon="$calendarRange"
               >
                 {{ dateRangeText }}
               </v-btn>
             </template>
-
             <v-card min-width="360" rounded="lg" elevation="4">
-              <v-card-title class="pa-4 pb-0 text-body-1 font-weight-medium">
-                Select Date Range
-              </v-card-title>
-
+              <v-card-title class="pa-4 pb-0 text-body-1 font-weight-medium"
+                >Select Date Range</v-card-title
+              >
               <v-card-subtitle class="px-4 pb-2 text-caption">
                 {{
                   dateRange.length === 0
@@ -201,8 +208,6 @@ onMounted(async () => {
                       : dateRangeText
                 }}
               </v-card-subtitle>
-
-              <!-- Vuetify Date Picker in range mode -->
               <v-date-picker
                 v-model="dateRange"
                 multiple="range"
@@ -211,23 +216,20 @@ onMounted(async () => {
                 color="primary"
                 class="elevation-0"
               />
-
-              <v-card-actions class="pa-4 pt-0 d-flex ga-2">
-                <v-btn variant="text" color="error" @click="clearDateRange"> Clear </v-btn>
+              <v-card-actions class="pa-4 pt-0">
+                <v-btn variant="text" color="error" @click="clearDateRange">Clear</v-btn>
                 <v-spacer />
                 <v-btn
                   variant="tonal"
                   color="primary"
                   :disabled="dateRange.length < 2"
-                  @click="applyDateRange"
+                  @click="dateMenu = false"
+                  >Apply</v-btn
                 >
-                  Apply
-                </v-btn>
               </v-card-actions>
             </v-card>
           </v-menu>
 
-          <!-- Active filter chip -->
           <v-chip
             v-if="dateRange.length >= 2"
             color="primary"
@@ -239,6 +241,7 @@ onMounted(async () => {
         </div>
       </v-card-title>
 
+      <!-- Data Table -->
       <v-data-table
         :headers="headers"
         :items="filteredInspections"
@@ -248,27 +251,43 @@ onMounted(async () => {
         class="elevation-0 w-100"
         items-per-page="10"
       >
-        <template #item.synced="{ item }">
+        <!-- Synced chip -->
+        <template #[`item.synced`]="{ item }">
           <v-chip :color="item.synced === 1 ? 'success' : 'warning'" size="small" variant="tonal">
             {{ item.synced === 1 ? '✅ Yes' : '⏳ Pending' }}
           </v-chip>
         </template>
 
-        <template #item.comments="{ item }">
-          <div class="text-truncate" style="max-width: 180px">
+        <!-- Comments truncated -->
+        <template #[`item.comments`]="{ item }">
+          <div class="text-truncate" style="max-width: 160px">
             {{ item.comments || '—' }}
           </div>
         </template>
 
+        <!-- ↓ Export button per row -->
+        <template #[`item.actions`]="{ item }">
+          <div class="d-flex">
+            <!-- PDF Lib Version -->
+            <v-btn
+              size="small"
+              color="primary"
+              variant="tonal"
+              :loading="isExporting && exportingId === item.id"
+              prepend-icon="$filePdfBox"
+              @click="handleExport(item, showToast)"
+            >
+              PDF
+            </v-btn>
+          </div>
+        </template>
+
+        <!-- Empty state -->
         <template #no-data>
           <div class="text-center py-8">
-            <v-icon size="48" color="grey-lighten-1">mdi-calendar-search</v-icon>
+            <v-icon size="48" color="grey-lighten-1">$calendarSearch</v-icon>
             <p class="text-medium-emphasis mt-2">
-              {{
-                dateRange.length >= 2
-                  ? 'No records found in selected date range'
-                  : 'No inspections found'
-              }}
+              {{ dateRange.length >= 2 ? 'No records in selected range' : 'No inspections found' }}
             </p>
             <v-btn
               v-if="dateRange.length >= 2"
@@ -289,11 +308,20 @@ onMounted(async () => {
     </v-card>
   </v-container>
 
+  <!-- Generating PDF overlay -->
+  <v-overlay v-model="isExporting" class="align-center justify-center" persistent>
+    <v-card class="pa-6 text-center" rounded="xl" min-width="260">
+      <v-progress-circular indeterminate color="primary" size="48" class="mb-4" />
+      <div class="text-body-1 font-weight-medium">Generating PDF...</div>
+      <div class="text-body-2 text-medium-emphasis mt-1">Please wait</div>
+    </v-card>
+  </v-overlay>
+
   <!-- Toast -->
   <v-snackbar
     v-model="toast.show"
     :color="toast.color"
-    :timeout="3000"
+    :timeout="4000"
     location="top right"
     rounded="lg"
     elevation="4"
@@ -307,12 +335,11 @@ onMounted(async () => {
 
 <style scoped>
 .dashboard-card {
-  background: var(--blue-0) !important;
+  background: var(--blue-500) !important;
   border: 1px solid var(--blue-200) !important;
-  box-shadow: 0 6px 18px rgba(0, 86, 210, 0.12) !important;
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.1) !important;
   border-radius: 16px !important;
 }
-
 .summary-card {
   border: 1px solid rgba(0, 86, 210, 0.12);
   box-shadow: 0 2px 8px rgba(0, 86, 210, 0.08) !important;
