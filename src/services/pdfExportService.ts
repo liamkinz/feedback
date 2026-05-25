@@ -20,9 +20,9 @@ const INSPECTION_FIELD_MAP: Record<InspectionType, string> = {
 
 // ─── Service Type Checkbox Coordinates ────────────────────────
 const SERVICE_TYPE_COORDS: Record<InspectionType, [number, number]> = {
-  SiteInspection: [152, 609], // ← calibrate with DEV_MODE
-  FinalInspection: [152, 596], // ← calibrate with DEV_MODE
-  AnnualInspection: [152, 583], // ← calibrate with DEV_MODE
+  SiteInspection: [137, 663], // ← calibrate with DEV_MODE
+  FinalInspection: [137, 649], // ← calibrate with DEV_MODE
+  AnnualInspection: [137, 635], // ← calibrate with DEV_MODE
 }
 
 // ─── SQD Config ───────────────────────────────────────────────
@@ -124,7 +124,8 @@ function fillRespondentInfo(
   const specificText = (info as Record<string, unknown>)[fieldName]
 
   if (typeof specificText === 'string' && specificText) {
-    drawText(page, font, specificText, 137, 663, 8)
+    const [x, y] = SERVICE_TYPE_COORDS[inspectionType]
+    drawText(page, font, specificText, x, y, 8)
   }
 }
 

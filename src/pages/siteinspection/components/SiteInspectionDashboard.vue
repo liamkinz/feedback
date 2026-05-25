@@ -168,7 +168,7 @@ onMounted(async () => {
     </div>
 
     <!-- Table Card -->
-    <v-card class="w-100 dashboard-card4" style="max-width: 1400px; margin-top: 16px">
+    <v-card class="w-100 dashboard-card" style="max-width: 1400px; margin-top: 16px">
       <!-- Toolbar -->
       <v-card-title class="pa-4">
         <div class="d-flex align-center ga-3 flex-wrap">
