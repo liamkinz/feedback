@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
+import { usePDFExport } from '@/composables/usePDFExport'
+import { useToast } from '@/composables/useToast'
 import { getAllLocalAnnualInspections } from '@/services/annualInspectionService'
 import type { AnnualInspectionFeedback } from '@/db/database'
 
-const { syncAnnualInspections, isSyncingAnnualInspections, unsyncedAnnualInspectionCount, toast } =
+const { syncAnnualInspections, isSyncingAnnualInspections, unsyncedAnnualInspectionCount } =
   useFeedback()
+const { toast, showToast } = useToast()
+const { isExporting, exportingId, handleExport } =
+  usePDFExport<AnnualInspectionFeedback>('AnnualInspection')
 
 // ── State ──────────────────────────────────────────────────────
 const inspections = ref<AnnualInspectionFeedback[]>([])
@@ -67,27 +72,28 @@ const filteredInspections = computed(() => {
 
 // ── Headers ────────────────────────────────────────────────────
 const headers = [
-  { title: 'ID', key: 'id', width: '60px' },
-  { title: 'Date', key: 'respondentInfo.date', width: '110px' },
-  { title: 'Client Type', key: 'respondentInfo.clientType', width: '120px' },
-  { title: 'Sex', key: 'respondentInfo.sex', width: '70px' },
-  { title: 'Age', key: 'respondentInfo.age', width: '70px' },
-  { title: 'Contact', key: 'respondentInfo.contactNumber', width: '120px' },
-  { title: 'Site', key: 'respondentInfo.siteInspections', width: '100px' },
-  { title: 'CC1', key: 'selectedAnswers.CC1', width: '60px' },
-  { title: 'CC2', key: 'selectedAnswers.CC2', width: '60px' },
-  { title: 'CC3', key: 'selectedAnswers.CC3', width: '60px' },
-  { title: 'SQD0', key: 'selectedRatings.SQD0', width: '70px' },
-  { title: 'SQD1', key: 'selectedRatings.SQD1', width: '70px' },
-  { title: 'SQD2', key: 'selectedRatings.SQD2', width: '70px' },
-  { title: 'SQD3', key: 'selectedRatings.SQD3', width: '70px' },
-  { title: 'SQD4', key: 'selectedRatings.SQD4', width: '70px' },
-  { title: 'SQD5', key: 'selectedRatings.SQD5', width: '70px' },
-  { title: 'SQD6', key: 'selectedRatings.SQD6', width: '70px' },
-  { title: 'SQD7', key: 'selectedRatings.SQD7', width: '70px' },
-  { title: 'SQD8', key: 'selectedRatings.SQD8', width: '70px' },
-  { title: 'Comments', key: 'comments', width: '180px' },
-  { title: 'Synced', key: 'synced', width: '90px' },
+  { title: 'ID', key: 'id', width: '55px' },
+  { title: 'Date', key: 'respondentInfo.date', width: '100px' },
+  { title: 'Client Type', key: 'respondentInfo.clientType', width: '110px' },
+  { title: 'Sex', key: 'respondentInfo.sex', width: '65px' },
+  { title: 'Age', key: 'respondentInfo.age', width: '60px' },
+  { title: 'Contact', key: 'respondentInfo.contactNumber', width: '110px' },
+  { title: 'Annual', key: 'respondentInfo.annualInspection', width: '100px' },
+  { title: 'CC1', key: 'selectedAnswers.CC1', width: '55px' },
+  { title: 'CC2', key: 'selectedAnswers.CC2', width: '55px' },
+  { title: 'CC3', key: 'selectedAnswers.CC3', width: '55px' },
+  { title: 'SQD0', key: 'selectedRatings.SQD0', width: '65px' },
+  { title: 'SQD1', key: 'selectedRatings.SQD1', width: '65px' },
+  { title: 'SQD2', key: 'selectedRatings.SQD2', width: '65px' },
+  { title: 'SQD3', key: 'selectedRatings.SQD3', width: '65px' },
+  { title: 'SQD4', key: 'selectedRatings.SQD4', width: '65px' },
+  { title: 'SQD5', key: 'selectedRatings.SQD5', width: '65px' },
+  { title: 'SQD6', key: 'selectedRatings.SQD6', width: '65px' },
+  { title: 'SQD7', key: 'selectedRatings.SQD7', width: '65px' },
+  { title: 'SQD8', key: 'selectedRatings.SQD8', width: '65px' },
+  { title: 'Comments', key: 'comments', width: '160px' },
+  { title: 'Synced', key: 'synced', width: '85px' },
+  { title: 'Export', key: 'actions', width: '85px', sortable: false },
 ] as const
 
 // ── Computed Summary ───────────────────────────────────────────
@@ -172,7 +178,7 @@ onMounted(async () => {
     </div>
 
     <!-- Data Table -->
-    <v-card class="w-100 dashboard-card" style="max-width: 1400px">
+    <v-card class="w-100 dashboard-card" style="max-width: 1400px; margin-top: 16px">
       <!-- Toolbar: Search + Date Range -->
       <v-card-title class="pa-4">
         <div class="d-flex align-center ga-3 flex-wrap">
@@ -274,6 +280,23 @@ onMounted(async () => {
           </div>
         </template>
 
+        <!-- ↓ Export button per row -->
+        <template #[`item.actions`]="{ item }">
+          <div class="d-flex">
+            <!-- PDF Lib Version -->
+            <v-btn
+              size="small"
+              color="primary"
+              variant="tonal"
+              :loading="isExporting && exportingId === item.id"
+              prepend-icon="$filePdfBox"
+              @click="handleExport(item, showToast)"
+            >
+              PDF
+            </v-btn>
+          </div>
+        </template>
+
         <template #no-data>
           <div class="text-center py-8">
             <v-icon size="48" color="grey-lighten-1">mdi-calendar-search</v-icon>
@@ -303,11 +326,20 @@ onMounted(async () => {
     </v-card>
   </v-container>
 
+  <!-- Generating PDF overlay -->
+  <v-overlay v-model="isExporting" class="align-center justify-center" persistent>
+    <v-card class="pa-6 text-center" rounded="xl" min-width="260">
+      <v-progress-circular indeterminate color="primary" size="48" class="mb-4" />
+      <div class="text-body-1 font-weight-medium">Generating PDF...</div>
+      <div class="text-body-2 text-medium-emphasis mt-1">Please wait</div>
+    </v-card>
+  </v-overlay>
+
   <!-- Toast -->
   <v-snackbar
     v-model="toast.show"
     :color="toast.color"
-    :timeout="3000"
+    :timeout="4000"
     location="top right"
     rounded="lg"
     elevation="4"
@@ -321,12 +353,11 @@ onMounted(async () => {
 
 <style scoped>
 .dashboard-card {
-  background: var(--blue-0) !important;
+  background: var(--blue-500) !important;
   border: 1px solid var(--blue-200) !important;
-  box-shadow: 0 6px 18px rgba(0, 86, 210, 0.12) !important;
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.1) !important;
   border-radius: 16px !important;
 }
-
 .summary-card {
   border: 1px solid rgba(0, 86, 210, 0.12);
   box-shadow: 0 2px 8px rgba(0, 86, 210, 0.08) !important;
