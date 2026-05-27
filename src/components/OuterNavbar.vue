@@ -14,7 +14,6 @@ const isDark = computed(() => theme.global.current.value.dark)
 
 const navLinks = [
   { title: 'Home', path: '/', icon: '$homeOutline' },
-  { title: 'Dashboard', path: '/dashboard', icon: '$viewDashboardOutline' },
   { title: 'Internal', path: '/internal', icon: '$officeBuildingOutline' },
   { title: 'Site Inspection', path: '/site-inspection', icon: '$mapMarkerOutline' },
   { title: 'Final Inspection', path: '/final-inspection', icon: '$clipboardCheckOutline' },
@@ -30,7 +29,7 @@ const navigateTo = (path: string) => {
 }
 
 const handleGetStarted = () => {
-  router.push('/dashboard')
+  router.push('/auth')
   isDrawerOpen.value = false
 }
 

@@ -26,6 +26,6 @@ function showToast(message: string, color: ToastColor = 'info', timeout: number 
 }
 
 const success = (msg: string) => showToast(msg, 'success')
-const error = (msg: string) => showToast(msg, 'error', 5000)
-const warning = (msg: string) => showToast(msg, 'warning', 5000)
-const info = (msg: string) => showToast(msg, 'info')
+const error = (msg: string) => showToast(msg, 'error', 4000)
+const warning = (msg: string) => showToast(msg, 'warning', 4000)
+const info = (msg: string) => showToast(msg, 'info', 4000)
