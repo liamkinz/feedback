@@ -34,6 +34,12 @@ import {
   mdiEyeOff,
   mdiFilePdfBox,
   mdiCalendarSearch,
+  mdiHome,
+  mdiChartBar,
+  mdiFileDocument,
+  mdiEyeSettingsOutline,
+  mdiLogout,
+  mdiBell,
 } from '@mdi/js'
 
 // ─── Theme Definitions ────────────────────────────────────────────────────────
@@ -121,6 +127,14 @@ export const vuetify = createVuetify({
       //Exporting PDF
       filePdfBox: mdiFilePdfBox,
       calendarSearch: mdiCalendarSearch,
+
+      //dashboard
+      home: mdiHome,
+      chartBar: mdiChartBar,
+      fileDocument: mdiFileDocument,
+      settings: mdiEyeSettingsOutline,
+      logout: mdiLogout,
+      bell: mdiBell,
     },
     sets: { mdi },
   },

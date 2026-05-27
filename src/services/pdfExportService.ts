@@ -129,11 +129,6 @@ function fillRespondentInfo(
   }
 }
 
-// function fillServiceType(page: PdfPage, inspectionType: InspectionType): void {
-//   const coords = SERVICE_TYPE_COORDS[inspectionType]
-//   if (coords) drawCheck(page, coords[0], coords[1], true)
-// }
-
 function fillCC(page: PdfPage, sa: Record<string, string>): void {
   // CC1
   drawCheck(page, 83, 572, sa['CC1'] === '1')
@@ -185,7 +180,6 @@ export async function exportInspectionPDF(
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
 
   fillRespondentInfo(page, font, record.respondentInfo, inspectionType)
-  // fillServiceType(page, inspectionType)
   fillCC(page, record.selectedAnswers ?? {})
   fillSQD(page, record.selectedRatings ?? {})
   drawText(page, font, record.comments ?? '', 21, 71, 8)
