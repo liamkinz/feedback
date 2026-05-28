@@ -120,6 +120,14 @@ const router = createRouter({
       name: 'admin-dashboard',
       component: InnerLayout,
       meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          name: 'AdminView',
+          component: AdminView,
+          meta: { requiresAuth: true },
+        },
+      ],
     },
     // {
     //   path: '/auth',

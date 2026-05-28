@@ -49,6 +49,34 @@
   /* Ink (text) scale */
   --ink-700: #374151;
   --ink-900: #111827;
+
+  /* Global gradient theme */
+  --theme-light: #74bbe7;
+  --theme-mid: #5998ba;
+  --theme-dark: #155a8f;
+  --theme-gradient: linear-gradient(
+    135deg,
+    var(--theme-light) 0%,
+    var(--theme-mid) 50%,
+    var(--theme-dark) 100%
+  );
+}
+
+/* ─── Inner Layout Theme Tokens ──────────────────────────────────────────── */
+.layout-root {
+  --ink-900: #0b0f14;
+  --ink-700: #303640;
+  --ink-500: #6c737f;
+  --line: #e6e9ee;
+  --brand-600: #0a7c7b;
+  --brand-500: #0ea5a4;
+  --brand-200: #a6e8e7;
+  --surface: var(--theme-gradient);
+  font-family: inherit;
+}
+
+.v-application {
+  background: var(--theme-gradient);
 }
 
 /* New */
@@ -85,18 +113,8 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
-    sans-serif;
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

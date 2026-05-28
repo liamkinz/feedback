@@ -2,8 +2,8 @@
 
 /// <reference types="vite-plugin-pwa/client" />
 
-// declare module '*.vue' {
-//   import type { DefineComponent } from 'vue'
-//   const component: DefineComponent<object, object, object>
-//   export default component
-// }
+declare module '*.vue' {
+  import type { DefineComponent } from 'vue'
+  const component: DefineComponent<object, object, object>
+  export default component
+}

@@ -1,5 +1,6 @@
 @import './base.css';
 @import './styles/forms.css';
+@import './styles/dashboard.css';
 
 /* ─── App Root ───────────────────────────────────────────────────────────── */
 #app {
