@@ -16,6 +16,7 @@ import {
   mdiClose,
   mdiCloudUpload,
   mdiMagnify,
+  mdiCalendar,
   mdiCalendarRange,
   mdiHomeOutline,
   mdiViewDashboardOutline,
@@ -40,6 +41,7 @@ import {
   mdiEyeSettingsOutline,
   mdiLogout,
   mdiBell,
+  mdiRefresh,
 } from '@mdi/js'
 
 // ─── Theme Definitions ────────────────────────────────────────────────────────
@@ -104,6 +106,7 @@ export const vuetify = createVuetify({
       cloudUpload: mdiCloudUpload,
       magnify: mdiMagnify,
       calendarRange: mdiCalendarRange,
+      calendar: mdiCalendar,
       homeOutline: mdiHomeOutline,
       viewDashboardOutline: mdiViewDashboardOutline,
       officeBuildingOutline: mdiOfficeBuildingOutline,
@@ -135,6 +138,7 @@ export const vuetify = createVuetify({
       settings: mdiEyeSettingsOutline,
       logout: mdiLogout,
       bell: mdiBell,
+      refresh: mdiRefresh,
     },
     sets: { mdi },
   },
