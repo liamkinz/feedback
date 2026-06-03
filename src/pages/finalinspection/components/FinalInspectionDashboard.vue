@@ -78,7 +78,7 @@ const headers = [
   { title: 'Sex', key: 'respondentInfo.sex', width: '65px' },
   { title: 'Age', key: 'respondentInfo.age', width: '60px' },
   { title: 'Contact', key: 'respondentInfo.contactNumber', width: '110px' },
-  { title: 'Site', key: 'respondentInfo.siteInspections', width: '100px' },
+  { title: 'Site', key: 'respondentInfo.finalInspection', width: '100px' },
   { title: 'CC1', key: 'selectedAnswers.CC1', width: '55px' },
   { title: 'CC2', key: 'selectedAnswers.CC2', width: '55px' },
   { title: 'CC3', key: 'selectedAnswers.CC3', width: '55px' },
@@ -122,9 +122,9 @@ onMounted(async () => {
   window.addEventListener('online', async () => {
     isOnline.value = true
     // Auto-sync when connection is restored
-    if (unsyncedFinalInspectionCount.value > 0) {
-      await handleSync()
-    }
+    // if (unsyncedFinalInspectionCount.value > 0) {
+    //   await handleSync()
+    // }
   })
   window.addEventListener('offline', () => {
     isOnline.value = false
