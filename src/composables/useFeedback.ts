@@ -216,7 +216,6 @@ export function useFeedback() {
     sync,
     syncFinalInspections,
     syncAnnualInspections,
-    refreshUnsyncedCount,
     isSyncing,
     isSyncingFinalInspections,
     isSyncingAnnualInspections,

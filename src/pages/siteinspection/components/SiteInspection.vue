@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed } from 'vue'
 import { useTheme } from 'vuetify'
 import { useSiteInspection } from '../composables/useSiteInspection'
 import { useFeedback } from '@/composables/useFeedback'
 import FormLayout from '@/layouts/FormLayout.vue'
-import { getAllLocalInspections } from '@/services/siteInspectionService'
-import type { SiteInspectionFeedback } from '@/db/database'
 
 const theme = useTheme()
 const isDark = computed(() => theme.global.current.value.dark)
-
-const { submitSiteInspection, toast, sync, refreshUnsyncedCount } = useFeedback()
-const loading = ref(false)
-const inspections = ref<SiteInspectionFeedback[]>([])
 
 const {
   questions,
@@ -25,6 +19,8 @@ const {
   resetForm,
 } = useSiteInspection()
 
+const { submitSiteInspection, toast } = useFeedback()
+
 const handleSubmit = async () => {
   await submitSiteInspection({
     selectedAnswers: selectedAnswers.value,
@@ -34,28 +30,6 @@ const handleSubmit = async () => {
   })
   resetForm()
 }
-// ── Fetch ──────────────────────────────────────────────────────
-const fetchInspections = async () => {
-  loading.value = true
-  try {
-    inspections.value = await getAllLocalInspections()
-  } finally {
-    loading.value = false
-  }
-}
-
-const syncAll = async (): Promise<void> => {
-  await sync()
-}
-
-onMounted(async () => {
-  await refreshUnsyncedCount()
-  window.addEventListener('online', syncAll)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('online', syncAll)
-})
 </script>
 
 <template>

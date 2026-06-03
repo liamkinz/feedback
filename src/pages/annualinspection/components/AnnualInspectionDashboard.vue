@@ -122,9 +122,9 @@ onMounted(async () => {
   window.addEventListener('online', async () => {
     isOnline.value = true
     // Auto-sync when connection is restored
-    if (unsyncedAnnualInspectionCount.value > 0) {
-      await handleSync()
-    }
+    // if (unsyncedAnnualInspectionCount.value > 0) {
+    //   await handleSync()
+    // }
   })
   window.addEventListener('offline', () => {
     isOnline.value = false
