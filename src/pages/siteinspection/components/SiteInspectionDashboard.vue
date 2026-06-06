@@ -2,12 +2,10 @@
 import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
 import { usePDFExport } from '@/composables/usePDFExport'
-import { useToast } from 'vue-toastification'
 import { getAllLocalInspections } from '@/services/siteInspectionService'
 import type { SiteInspectionFeedback } from '@/db/database'
 
 const { sync, isSyncing, unsyncedCount } = useFeedback()
-const toast = useToast()
 const { isExporting, exportingId, handleExport } =
   usePDFExport<SiteInspectionFeedback>('SiteInspection')
 
