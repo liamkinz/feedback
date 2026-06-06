@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
 import { usePDFExport } from '@/composables/usePDFExport'
+import { useToast } from '@/composables/useToast'
 import { getAllLocalAnnualInspections } from '@/services/annualInspectionService'
 import type { AnnualInspectionFeedback } from '@/db/database'
 
@@ -9,6 +10,7 @@ const { syncAnnualInspections, isSyncingAnnualInspections, unsyncedAnnualInspect
   useFeedback()
 const { isExporting, exportingId, handleExport } =
   usePDFExport<AnnualInspectionFeedback>('AnnualInspection')
+const { showToast } = useToast()
 
 // ── State ──────────────────────────────────────────────────────
 const inspections = ref<AnnualInspectionFeedback[]>([])
