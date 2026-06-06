@@ -2,13 +2,11 @@
 import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
 import { usePDFExport } from '@/composables/usePDFExport'
-// import { useToast } from '@/composables/useToast'
 import { getAllLocalFinalInspections } from '@/services/finalInspectionService'
 import type { FinalInspectionFeedback } from '@/db/database'
 
 const { syncFinalInspections, isSyncingFinalInspections, unsyncedFinalInspectionCount } =
   useFeedback()
-// const { toast, showToast } = useToast()
 const { isExporting, exportingId, handleExport } =
   usePDFExport<FinalInspectionFeedback>('FinalInspection')
 
