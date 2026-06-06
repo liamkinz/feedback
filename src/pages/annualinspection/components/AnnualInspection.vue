@@ -19,7 +19,7 @@ const {
   resetForm,
 } = useAnnualInspection()
 
-const { submitAnnualInspection, toast } = useFeedback()
+const { submitAnnualInspection } = useFeedback()
 
 const handleSubmit = async () => {
   await submitAnnualInspection({
@@ -277,21 +277,6 @@ const handleSubmit = async () => {
           Submit Feedback
         </v-btn>
       </div>
-
-      <!-- Toast Notification -->
-      <v-snackbar
-        v-model="toast.show"
-        :color="toast.color"
-        :timeout="3000"
-        location="top right"
-        rounded="lg"
-        elevation="4"
-      >
-        {{ toast.message }}
-        <template #actions>
-          <v-btn variant="text" @click="toast.show = false"> Close </v-btn>
-        </template>
-      </v-snackbar>
     </div>
   </FormLayout>
 </template>
