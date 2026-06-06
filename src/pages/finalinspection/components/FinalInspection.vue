@@ -19,7 +19,7 @@ const {
   resetForm,
 } = useFinalInspection()
 
-const { submitFinalInspection, toast } = useFeedback()
+const { submitFinalInspection } = useFeedback()
 
 const handleSubmit = async () => {
   await submitFinalInspection({
@@ -279,7 +279,7 @@ const handleSubmit = async () => {
       </div>
 
       <!-- Toast Notification -->
-      <v-snackbar
+      <!-- <v-snackbar
         v-model="toast.show"
         :color="toast.color"
         :timeout="3000"
@@ -291,7 +291,7 @@ const handleSubmit = async () => {
         <template #actions>
           <v-btn variant="text" @click="toast.show = false"> Close </v-btn>
         </template>
-      </v-snackbar>
+      </v-snackbar> -->
     </div>
   </FormLayout>
 </template>

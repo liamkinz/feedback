@@ -8,7 +8,9 @@ import { useAuthStore } from '@/stores/authStore'
 import App from './App.vue'
 import router from './router/router'
 import { registerSW } from 'virtual:pwa-register' // auto-provided by vite-plugin-pwa
+import { registerPlugins } from '@/plugins'
 
+import 'vue-toastification/dist/index.css'
 // Register service worker
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -27,7 +29,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
-
+registerPlugins(app)
 const authStore = useAuthStore()
 await authStore.restoreSession()
 
