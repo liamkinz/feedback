@@ -2,13 +2,13 @@
 import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
 import { usePDFExport } from '@/composables/usePDFExport'
-import { useToast } from '@/composables/useToast'
+// import { useToast } from '@/composables/useToast'
 import { getAllLocalFinalInspections } from '@/services/finalInspectionService'
 import type { FinalInspectionFeedback } from '@/db/database'
 
 const { syncFinalInspections, isSyncingFinalInspections, unsyncedFinalInspectionCount } =
   useFeedback()
-const { toast, showToast } = useToast()
+// const { toast, showToast } = useToast()
 const { isExporting, exportingId, handleExport } =
   usePDFExport<FinalInspectionFeedback>('FinalInspection')
 
@@ -290,7 +290,7 @@ onMounted(async () => {
               variant="tonal"
               :loading="isExporting && exportingId === item.id"
               prepend-icon="$filePdfBox"
-              @click="handleExport(item, showToast)"
+              @click="handleExport(item)"
             >
               PDF
             </v-btn>
@@ -331,21 +331,6 @@ onMounted(async () => {
       <div class="text-body-2 text-medium-emphasis mt-1">Please wait</div>
     </v-card>
   </v-overlay>
-
-  <!-- Toast -->
-  <v-snackbar
-    v-model="toast.show"
-    :color="toast.color"
-    :timeout="3000"
-    location="top right"
-    rounded="lg"
-    elevation="4"
-  >
-    {{ toast.message }}
-    <template #actions>
-      <v-btn variant="text" @click="toast.show = false">Close</v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <style scoped>
