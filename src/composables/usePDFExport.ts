@@ -2,11 +2,8 @@ import { ref } from 'vue'
 import { exportInspectionPDF } from '@/services/pdfExportService'
 import type { BaseInspectionFeedback } from '@/db/database'
 import type { InspectionType } from '@/services/pdfExportService'
-
+import { useToast } from 'vue-toastification'
 export type ExportMethod = 'pdf-lib'
-
-export type ToastColor = 'success' | 'error' | 'warning' | 'info'
-export type ToastHandler = (message: string, color?: ToastColor) => void
 
 export function usePDFExport<T extends BaseInspectionFeedback>(inspectionType: InspectionType) {
   const isExporting = ref(false)
@@ -32,12 +29,13 @@ export function usePDFExport<T extends BaseInspectionFeedback>(inspectionType: I
     await exportWithLib(record)
   }
 
-  const handleExport = async (record: T, toast?: ToastHandler): Promise<void> => {
+  const handleExport = async (record: T): Promise<void> => {
+    const toast = useToast()
     try {
       await exportRecord(record, 'pdf-lib')
-      toast?.('PDF exported successfully.', 'success')
+      toast.success('PDF exported successfully.')
     } catch {
-      toast?.('PDF export failed. Please try again.', 'error')
+      toast.error('PDF export failed. Please try again.')
     }
   }
 

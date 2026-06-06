@@ -4,6 +4,7 @@ import { useTheme } from 'vuetify'
 import { useSiteInspection } from '../composables/useSiteInspection'
 import { useFeedback } from '@/composables/useFeedback'
 import FormLayout from '@/layouts/FormLayout.vue'
+import { useToast } from 'vue-toastification'
 
 const theme = useTheme()
 const isDark = computed(() => theme.global.current.value.dark)
@@ -19,9 +20,11 @@ const {
   resetForm,
 } = useSiteInspection()
 
-const { submitSiteInspection, toast } = useFeedback()
+const { submitSiteInspection } = useFeedback()
 
 const handleSubmit = async () => {
+  const toast = useToast()
+
   await submitSiteInspection({
     selectedAnswers: selectedAnswers.value,
     selectedRatings: selectedRatings.value,
@@ -277,21 +280,6 @@ const handleSubmit = async () => {
           Submit Feedback
         </v-btn>
       </div>
-
-      <!-- Toast Notification -->
-      <v-snackbar
-        v-model="toast.show"
-        :color="toast.color"
-        :timeout="3000"
-        location="top right"
-        rounded="lg"
-        elevation="4"
-      >
-        {{ toast.message }}
-        <template #actions>
-          <v-btn variant="text" @click="toast.show = false"> Close </v-btn>
-        </template>
-      </v-snackbar>
     </div>
   </FormLayout>
 </template>

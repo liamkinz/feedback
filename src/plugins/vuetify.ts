@@ -78,7 +78,7 @@ const darkTheme: ThemeDefinition = {
 
 // ─── Vuetify Instance ─────────────────────────────────────────────────────────
 
-export const vuetify = createVuetify({
+const vuetify = createVuetify({
   theme: {
     defaultTheme: 'light',
     themes: {
@@ -165,3 +165,9 @@ export const vuetify = createVuetify({
     },
   },
 })
+
+// Export vuetify instance for dynamic theme updates
+export { vuetify }
+
+// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
+export default vuetify
