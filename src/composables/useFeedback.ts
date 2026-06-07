@@ -14,7 +14,6 @@ import {
   syncAnnualInspectionsPending,
   getUnsyncedAnnualInspectionCount,
 } from '@/services/annualInspectionService'
-// import { useToast } from '@/composables/useToast'
 import { useToast } from 'vue-toastification'
 import type { SurveyState } from '@/pages/siteinspection/types/siteinspection.type'
 import type { SurveyState as FinalInspection } from '@/pages/finalinspection/types/finalInspection.types'
@@ -37,9 +36,12 @@ export function useFeedback() {
       await refreshUnsyncedCount()
 
       if (navigator.onLine) {
+        toast.info('Feedback Submitted, System online is detected, syncing now...', {
+          timeout: 3000,
+        })
         await sync()
       } else {
-        toast.info('Feedback saved locally. Will sync when online.', { timeout: 1000 })
+        toast.info('Feedback saved locally. Will sync when online.', { timeout: 3000 })
       }
     } catch {
       toast.error('Failed to save feedback. Please try again.')
@@ -50,12 +52,14 @@ export function useFeedback() {
     try {
       await saveLocalFinalInspection(data)
       await refreshUnsyncedFinalInspectionCount()
-      toast.success('Feedback saved successfully!')
 
       if (navigator.onLine) {
+        toast.info('Feedback Submitted, System online is detected, syncing now...', {
+          timeout: 3000,
+        })
         await syncFinalInspections()
       } else {
-        toast.info('Feedback saved locally. Will sync when online.', { timeout: 1000 })
+        toast.info('Feedback saved locally. Will sync when online.', { timeout: 3000 })
       }
     } catch (error) {
       toast.error('Failed to save feedback. Please try again.')
@@ -66,12 +70,14 @@ export function useFeedback() {
     try {
       await saveLocalAnnualInspection(data)
       await refreshUnsyncedAnnualInspectionCount()
-      toast.success('Feedback saved successfully!')
 
       if (navigator.onLine) {
+        toast.info('Feedback Submitted, System online is detected, syncing now...', {
+          timeout: 3000,
+        })
         await syncAnnualInspections()
       } else {
-        toast.info('Feedback saved locally. Will sync when online.', { timeout: 1000 })
+        toast.info('Feedback saved locally. Will sync when online.', { timeout: 3000 })
       }
     } catch (error) {
       toast.error('Failed to save feedback. Please try again.')
@@ -89,7 +95,7 @@ export function useFeedback() {
     syncResult.value = null
 
     try {
-      toast.info('🚀 Starting site inspection sync...', { timeout: 2000 })
+      // toast.info('🚀 Starting site inspection sync...', { timeout: 2000 })
       const result = await syncAllPending()
       syncResult.value = result
 
@@ -98,7 +104,7 @@ export function useFeedback() {
       } else if (result.synced > 0 && result.failed > 0) {
         toast.warning(
           `⚠️ Synced ${result.synced} record(s), but ${result.failed} failed. Try again.`,
-          { timeout: 2000 },
+          { timeout: 3000 },
         )
       } else {
         toast.error('❌ Sync failed. Check your connection and try again.')
@@ -122,18 +128,16 @@ export function useFeedback() {
     syncResult.value = null
 
     try {
-      toast.info('🚀 Starting final inspection sync...', { timeout: 2000 })
+      // toast.info('🚀 Starting final inspection sync...', { timeout: 2000 })
       const result = await syncFinalInspectionsPending()
       syncResult.value = result
 
       if (result.failed === 0 && result.synced > 0) {
-        toast.success(`✅ ${result.synced} record(s) successfully synced to cloud!`, {
-          timeout: 2000,
-        })
+        toast.success(`✅ ${result.synced} record(s) successfully synced to cloud!`)
       } else if (result.synced > 0 && result.failed > 0) {
         toast.warning(
           `⚠️ Synced ${result.synced} record(s), but ${result.failed} failed. Try again.`,
-          { timeout: 2000 },
+          { timeout: 3000 },
         )
       } else {
         toast.error('❌ Sync failed. Check your connection and try again.')
@@ -157,7 +161,7 @@ export function useFeedback() {
     syncResult.value = null
 
     try {
-      toast.info('🚀 Starting annual inspection sync...', { timeout: 2000 })
+      // toast.info('🚀 Starting annual inspection sync...', { timeout: 2000 })
       const result = await syncAnnualInspectionsPending()
       syncResult.value = result
 
@@ -166,7 +170,7 @@ export function useFeedback() {
       } else if (result.synced > 0 && result.failed > 0) {
         toast.warning(
           `⚠️ Synced ${result.synced} record(s), but ${result.failed} failed. Try again.`,
-          { timeout: 2000 },
+          { timeout: 3000 },
         )
       } else {
         toast.error('❌ Sync failed. Check your connection and try again.')

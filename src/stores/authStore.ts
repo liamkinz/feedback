@@ -83,8 +83,7 @@ export const useAuthStore = defineStore('auth', () => {
         passwordHash: '',
         lastLogin: new Date().toISOString(),
       }
-      ;(toast.info(`Welcome back, ${session.user.user_metadata?.name ?? 'User'}!`),
-        (token.value = session.access_token))
+      token.value = session.access_token
     }
   }
 

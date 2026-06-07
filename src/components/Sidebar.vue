@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 import ToggleTheme from '@/components/ThemeToggle.vue'
 
+// 1. Updated Type to allow optional sub-items
 type NavItem = {
   id: number
   label: string
   icon: string
-  to: string
+  to?: string // Optional because parents with children don't need a single link
+  children?: NavItem[] // Optional nested items list
 }
 
 const authStore = useAuthStore()
@@ -17,6 +19,7 @@ const router = useRouter()
 
 const { mdAndUp } = useDisplay()
 const drawer = ref(true)
+const isOnline = ref(navigator.onLine)
 
 watch(
   mdAndUp,
@@ -26,9 +29,29 @@ watch(
   { immediate: true },
 )
 
+// 2. Updated data array structure with your child tables
 const navItems: NavItem[] = [
   { id: 1, label: 'Overview', icon: '$home', to: '/' },
-  { id: 2, label: 'Analytics', icon: '$chartBar', to: '/analytics' },
+  {
+    id: 2,
+    label: 'Inspection Logs',
+    icon: '$clipBoard',
+    children: [
+      { id: 21, label: 'Site Inspection', icon: '$mapMarkerOutline', to: '/inspections/site' },
+      {
+        id: 22,
+        label: 'Final Inspection',
+        icon: '$clipboardCheckOutline',
+        to: '/inspections/final',
+      },
+      {
+        id: 23,
+        label: 'Annual Inspection',
+        icon: '$calendarCheckOutline',
+        to: '/inspections/annual',
+      },
+    ],
+  },
   { id: 3, label: 'Reports', icon: '$fileDocument', to: '/reports' },
 ]
 
@@ -56,6 +79,15 @@ const toggleDrawer = () => {
 }
 
 defineExpose({ toggleDrawer })
+
+onMounted(async () => {
+  window.addEventListener('online', () => {
+    isOnline.value = true
+  })
+  window.addEventListener('offline', () => {
+    isOnline.value = false
+  })
+})
 </script>
 
 <template>
@@ -79,19 +111,43 @@ defineExpose({ toggleDrawer })
 
         <v-divider class="sidebar-divider"></v-divider>
 
+        <!-- 3. Updated dynamic navigation rendering template block -->
         <v-list class="nav-list" density="compact">
-          <v-list-item
-            v-for="item in navItems"
-            :key="item.id"
-            :to="item.to"
-            class="nav-item"
-            active-class="nav-item-active"
-          >
-            <template v-slot:prepend>
-              <v-icon :icon="item.icon" size="20"></v-icon>
-            </template>
-            <v-list-item-title>{{ item.label }}</v-list-item-title>
-          </v-list-item>
+          <template v-for="item in navItems" :key="item.id">
+            <!-- DROPDOWN GROUP ITEM -->
+            <v-list-group v-if="item.children" :value="item.label">
+              <template v-slot:activator="{ props }">
+                <v-list-item v-bind="props" class="nav-item" active-class="nav-item-active">
+                  <template v-slot:prepend>
+                    <v-icon :icon="item.icon" size="20"></v-icon>
+                  </template>
+                  <v-list-item-title>{{ item.label }}</v-list-item-title>
+                </v-list-item>
+              </template>
+
+              <!-- Nested children renderer -->
+              <v-list-item
+                v-for="subItem in item.children"
+                :key="subItem.id"
+                :to="subItem.to"
+                class="nav-item sub-nav-item"
+                active-class="nav-item-active"
+              >
+                <template v-slot:prepend>
+                  <v-icon :icon="subItem.icon" size="20"></v-icon>
+                </template>
+                <v-list-item-title>{{ subItem.label }}</v-list-item-title>
+              </v-list-item>
+            </v-list-group>
+
+            <!-- SINGLE TEXT LINK ITEM -->
+            <v-list-item v-else :to="item.to" class="nav-item" active-class="nav-item-active">
+              <template v-slot:prepend>
+                <v-icon :icon="item.icon" size="20"></v-icon>
+              </template>
+              <v-list-item-title>{{ item.label }}</v-list-item-title>
+            </v-list-item>
+          </template>
         </v-list>
 
         <template v-slot:append>
@@ -115,8 +171,7 @@ defineExpose({ toggleDrawer })
             <div class="status-card">
               <div class="status-dot"></div>
               <div class="status-text">
-                <div class="status-title">System Online</div>
-                <div class="status-subtitle">All services stable</div>
+                <div class="status-title">{{ isOnline ? 'System Online' : 'System Offline' }}</div>
               </div>
             </div>
           </div>
@@ -159,3 +214,15 @@ defineExpose({ toggleDrawer })
     </v-layout>
   </v-app>
 </template>
+
+<style scoped>
+.nav-item {
+  padding-inline-start: 4px !important;
+  padding-inline-end: 12px !important;
+}
+
+/* Also shift sub-items slightly so they fit cleanly */
+.sub-nav-item {
+  padding-left: 24px !important;
+}
+</style>
