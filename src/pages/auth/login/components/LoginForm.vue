@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useLoginForm } from '../composables/useLogin'
 
 const {
@@ -34,6 +34,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('online', handleOnline)
   window.removeEventListener('offline', handleOffline)
+  // stopCountdown()
 })
 </script>
 
@@ -168,21 +169,6 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
-
-  <!-- ✅ Vuetify Toast -->
-  <v-snackbar
-    v-model="toast.show"
-    :color="toast.color"
-    :timeout="toast.timeout"
-    location="top right"
-    rounded="lg"
-    elevation="4"
-  >
-    {{ toast.message }}
-    <template #actions>
-      <v-btn variant="text" @click="toast.show = false">Close</v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <style scoped>

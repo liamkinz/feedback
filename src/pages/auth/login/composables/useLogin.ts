@@ -2,13 +2,16 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { resendConfirmationEmail } from '@/services/authService'
-import { useToast } from '@/composables/useToast'
+// import { useToast } from '@/composables/useToast'
+import { useToast } from 'vue-toastification'
 import type { LoginForm } from '../types/login.types'
+
+const toast = useToast()
 
 export function useLoginForm() {
   const router = useRouter()
   const authStore = useAuthStore()
-  const { toast, success, error, warning, info } = useToast()
+  const { success, error, warning, info } = useToast()
 
   const form = ref<LoginForm>({ email: '', password: '' })
   const showPassword = ref(false)
@@ -33,17 +36,11 @@ export function useLoginForm() {
         result.error.toLowerCase().includes('email not confirmed')
       ) {
         emailNotConfirmed.value = true // ← trigger barrier UI
-        warning('Please confirm your email before logging in.')
+        toast.info('Please confirm your email before logging in.')
       } else {
-        error(result.error ?? 'Login failed. Please try again.')
+        toast.error(result.error ?? 'Login failed. Please try again.')
       }
       return
-    }
-
-    if (authStore.isOffline) {
-      warning('Logged in offline. Data will sync when connected.')
-    } else {
-      success('Welcome back!')
     }
 
     setTimeout(() => router.push('/dashboard'), 1000)
@@ -52,17 +49,17 @@ export function useLoginForm() {
   // ── Resend Confirmation Email ─────────────────────────────────
   const handleResend = async () => {
     if (!form.value.email) {
-      error('Please enter your email address first.')
+      toast.error('Please enter your email address first.')
       return
     }
 
     isResending.value = true
     const resendResult = await resendConfirmationEmail(form.value.email)
     if (resendResult.ok) {
-      success('Confirmation email sent! Check your inbox.')
+      toast.success('Confirmation email sent! Check your inbox.')
       emailNotConfirmed.value = false
     } else {
-      error(resendResult.error ?? 'Failed to resend. Please try again.')
+      toast.error(resendResult.error ?? 'Failed to resend. Please try again.')
     }
     isResending.value = false
   }

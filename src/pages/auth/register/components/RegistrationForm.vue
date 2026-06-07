@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRegisterForm } from '../composables/useRegister'
+import { useToast } from 'vue-toastification'
 
-const { form, showPassword, isValid, passwordMismatch, isLoading, toast, handleRegister } =
+const toast = useToast()
+const erroMessage = ref('')
+
+const onRegister = async () => {
+  try {
+    await handleRegister()
+  } catch (error: any) {
+    erroMessage.value = error.message || 'Registration failed. Please try again.'
+    toast.error(erroMessage.value)
+  }
+}
+
+const { form, showPassword, isValid, passwordMismatch, isLoading, handleRegister } =
   useRegisterForm()
 
 const isOnline = ref(navigator.onLine)
@@ -65,8 +78,8 @@ function getStrengthClass(bar: number) {
     </div>
 
     <!-- Error Alert -->
-    <div v-if="toast.show && toast.color === 'error'" class="register-error">
-      {{ toast.message }}
+    <div v-if="erroMessage" class="register-error">
+      {{ erroMessage }}
     </div>
 
     <!-- Form -->
@@ -147,7 +160,7 @@ function getStrengthClass(bar: number) {
         class="register-btn"
         :class="{ 'register-btn--loading': isLoading }"
         :disabled="!isValid || isLoading || !isOnline"
-        @click="handleRegister"
+        @click="onRegister"
       >
         <span v-if="!isLoading">CREATE ACCOUNT</span>
         <span v-else class="register-spinner" />
@@ -203,21 +216,6 @@ function getStrengthClass(bar: number) {
       </p>
     </div>
   </div>
-
-  <!-- ✅ Toast -->
-  <v-snackbar
-    v-model="toast.show"
-    :color="toast.color"
-    :timeout="toast.timeout"
-    location="top right"
-    rounded="lg"
-    elevation="4"
-  >
-    {{ toast.message }}
-    <template #actions>
-      <v-btn variant="text" @click="toast.show = false">Close</v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <style scoped>
