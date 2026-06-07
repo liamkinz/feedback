@@ -32,6 +32,9 @@ import register from '@/pages/auth/register/RegisterView.vue'
 //Admin Dashboard
 import InnerLayout from '@/layouts/InnerLayout.vue'
 import AdminView from '@/pages/(admin)/AdminView.vue'
+import SiteInspectionLogs from '@/pages/(admin)/components/SiteInspectionLogs.vue'
+import FinalInspectionLogs from '@/pages/(admin)/components/FinalInspectionLogs.vue'
+import AnnualInspectionLogs from '@/pages/(admin)/components/AnnualInspectionLogs.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,18 +49,6 @@ const router = createRouter({
           component: LandingView,
           meta: { requiresGuest: true },
         },
-        // {
-        //   path: 'dashboard',
-        //   name: 'dashboard',
-        //   component: DashboardView,
-        //   meta: { requiresGuest: true },
-        // },
-        // {
-        //   path: 'internal',
-        //   name: 'internal',
-        //   component: InternalView,
-        //   meta: { requiresGuest: true },
-        // },
         {
           path: 'site-inspection',
           name: 'site-inspection',
@@ -127,27 +118,26 @@ const router = createRouter({
           component: AdminView,
           meta: { requiresAuth: true },
         },
+        {
+          path: '/inspections/site',
+          name: 'SiteInspectionLogs',
+          component: SiteInspectionLogs,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/inspections/final',
+          name: 'FinalInspectionLogs',
+          component: FinalInspectionLogs,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/inspections/annual',
+          name: 'AnnualInspectionLogs',
+          component: AnnualInspectionLogs,
+          meta: { requiresAuth: true },
+        },
       ],
     },
-    // {
-    //   path: '/auth',
-    //   component: Auth,
-    //   redirect: '/auth/login',
-    //   children: [
-    //     {
-    //       path: 'login',
-    //       name: 'Login',
-    //       component: login,
-    //       meta: { requiresGuest: true },
-    //     },
-    //     {
-    //       path: 'register',
-    //       name: 'Register',
-    //       component: register,
-    //       meta: { requiresGuest: true },
-    //     },
-    //   ],
-    // },
   ],
 })
 

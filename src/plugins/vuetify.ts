@@ -42,6 +42,7 @@ import {
   mdiLogout,
   mdiBell,
   mdiRefresh,
+  mdiClipboard,
 } from '@mdi/js'
 
 // ─── Theme Definitions ────────────────────────────────────────────────────────
@@ -134,6 +135,7 @@ const vuetify = createVuetify({
       //dashboard
       home: mdiHome,
       chartBar: mdiChartBar,
+      clipBoard: mdiClipboard,
       fileDocument: mdiFileDocument,
       settings: mdiEyeSettingsOutline,
       logout: mdiLogout,
