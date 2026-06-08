@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '../lib/supabase'
+import toast from '@/plugins/toast'
 
 export interface SiteInspectionLog {
   id: number
@@ -94,7 +95,7 @@ export const useInspectionLogsStore = defineStore('inspectionLogs', () => {
 
       if (error) throw error
     } catch (err) {
-      msgError.value = 'Failed to fetch site inspections'
+      msgError.value = 'Failed to fetch Site Inspections'
       console.error('Error fetching site inspections:', err)
     } finally {
       isLoading.value = false
@@ -115,7 +116,7 @@ export const useInspectionLogsStore = defineStore('inspectionLogs', () => {
 
       if (error) throw error
     } catch (err) {
-      msgError.value = 'Failed to fetch final inspections'
+      msgError.value = 'Failed to fetch Final Inspections'
       console.error('Error fetching final inspections:', err)
     } finally {
       isLoading.value = false
@@ -136,7 +137,7 @@ export const useInspectionLogsStore = defineStore('inspectionLogs', () => {
 
       if (error) throw error
     } catch (err) {
-      msgError.value = 'Failed to fetch annual inspections'
+      msgError.value = 'Failed to fetch Annual Inspections'
       console.error('Error fetching annual inspections:', err)
     } finally {
       isLoading.value = false
