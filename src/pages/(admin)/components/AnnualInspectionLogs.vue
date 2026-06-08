@@ -61,7 +61,7 @@ onMounted(async () => {
     <v-data-table
       :headers="headers"
       :header-props="{ class: 'text-no-wrap' }"
-      :items="annualInspectionLogsStore.siteInspect"
+      :items="annualInspectionLogsStore.annualInspect"
       :search="search"
       :loading="annualInspectionLogsStore.isLoading"
       :sort-by="[{ key: 'id', order: 'asc' }]"
