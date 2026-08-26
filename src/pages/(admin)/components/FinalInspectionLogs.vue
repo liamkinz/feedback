@@ -1,9 +1,55 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useInspectionLogsStore } from '@/stores/inspectionLogsStore'
+import { useInspectionLogsStore, type FinalInspectionLog } from '@/stores/inspectionLogsStore'
+import { usePDFExport } from '@/composables/usePDFExport'
+import type { SiteInspectionFeedback } from '@/db/database'
 
 const finalInspectionLogsStore = useInspectionLogsStore()
 const search = ref('')
+const { isExporting, exportingId, handleExport } =
+  usePDFExport<SiteInspectionFeedback>('FinalInspection')
+
+function ratingToString(value: string | number | null | undefined): string {
+  if (value === null || value === undefined || value === '') return ''
+  return String(value)
+}
+
+function logToFeedback(log: FinalInspectionLog): SiteInspectionFeedback {
+  return {
+    id: log.id,
+    respondentInfo: {
+      clientType: log.clientType ?? '',
+      date: log.date ?? '',
+      sex: log.sex ?? '',
+      age: log.age ?? '',
+      contactNumber: log.contactNumber ?? '',
+      siteInspections: log.finalInspection ?? '',
+    },
+    selectedAnswers: {
+      CC1: log.CC1 ?? '',
+      CC2: log.CC2 ?? '',
+      CC3: log.CC3 ?? '',
+    },
+    selectedRatings: {
+      SQD0: ratingToString(log.SQD0),
+      SQD1: ratingToString(log.SQD1),
+      SQD2: ratingToString(log.SQD2),
+      SQD3: ratingToString(log.SQD3),
+      SQD4: ratingToString(log.SQD4),
+      SQD5: ratingToString(log.SQD5),
+      SQD6: ratingToString(log.SQD6),
+      SQD7: ratingToString(log.SQD7),
+      SQD8: ratingToString(log.SQD8),
+    },
+    comments: log.comments ?? '',
+    synced: 1,
+    createdAt: String(log.created_at ?? ''),
+  }
+}
+
+function exportLog(log: FinalInspectionLog) {
+  return handleExport(logToFeedback(log))
+}
 
 // Define columns mapping directly to your database keys
 
@@ -28,7 +74,6 @@ const headers = ref([
   { title: 'SQD7', key: 'SQD7' },
   { title: 'SQD8', key: 'SQD8' },
   { title: 'Comments', key: 'comments' },
-  { title: 'Submitted Date', key: 'created_at' },
 ])
 
 onMounted(async () => {
@@ -64,7 +109,7 @@ onMounted(async () => {
       :items="finalInspectionLogsStore.finalInspect"
       :search="search"
       :loading="finalInspectionLogsStore.isLoading"
-      :sort-by="[{ key: 'id', order: 'asc' }]"
+      :sort-by="[{ key: 'id', order: 'desc' }]"
       loading-text="Loading inspection logs..."
       class="elevation-1"
     >
@@ -74,6 +119,26 @@ onMounted(async () => {
       <template #item.created_at="{ item }">
         {{ new Date(item.created_at).toLocaleDateString() }}
       </template>
+      <template #item.actions="{ item }">
+        <v-btn
+          size="small"
+          color="primary"
+          variant="tonal"
+          :loading="isExporting && exportingId === item.id"
+          prepend-icon="$filePdfBox"
+          @click="exportLog(item)"
+        >
+          PDF
+        </v-btn>
+      </template>
     </v-data-table>
   </v-container>
+
+  <v-overlay v-model="isExporting" class="align-center justify-center" persistent>
+    <v-card class="pa-6 text-center" rounded="xl" min-width="260">
+      <v-progress-circular indeterminate color="primary" size="48" class="mb-4" />
+      <div class="text-body-1 font-weight-medium">Generating PDF...</div>
+      <div class="text-body-2 text-medium-emphasis mt-1">Please wait</div>
+    </v-card>
+  </v-overlay>
 </template>
