@@ -1,85 +1,32 @@
 import 'vuetify/styles'
-// import '@mdi/font/css/materialdesignicons.css'
-import { createVuetify, type ThemeDefinition } from 'vuetify'
-import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
-
-// ✅ Import only the icons you actually use
-import {
-  mdiCheckboxMarked,
-  mdiCheckboxBlankOutline,
-  mdiMinusBox,
-  mdiRadioboxMarked,
-  mdiRadioboxBlank,
-  mdiChevronDown,
-  mdiMenu,
-  mdiCloseCircle,
-  mdiClose,
-  mdiCloudUpload,
-  mdiMagnify,
-  mdiCalendar,
-  mdiCalendarRange,
-  mdiHomeOutline,
-  mdiViewDashboardOutline,
-  mdiOfficeBuildingOutline,
-  mdiClipboardCheckOutline,
-  mdiMapMarkerOutline,
-  mdiCalendarCheckOutline,
-  mdiEmailOutline,
-  mdiCloseBox,
-  mdiWeatherNight,
-  mdiWhiteBalanceSunny,
-  mdiArrowRight,
-  mdiChevronRight,
-  mdiRocketLaunchOutline,
-  mdiEye,
-  mdiEyeOff,
-  mdiFilePdfBox,
-  mdiCalendarSearch,
-  mdiHome,
-  mdiChartBar,
-  mdiFileDocument,
-  mdiEyeSettingsOutline,
-  mdiLogout,
-  mdiBell,
-  mdiRefresh,
-  mdiClipboard,
-} from '@mdi/js'
+import '@mdi/font/css/materialdesignicons.css'
+import { createVuetify } from 'vuetify'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import '@/styles/app.scss'
+import { createThemes } from '@/themes'
+import { appConfig } from '@/config/app.config'
 
 // ─── Theme Definitions ────────────────────────────────────────────────────────
+// Built once from the two brand colors in src/config/app.config.ts — see
+// src/themes/base.ts. Baked into createVuetify() below rather than swapped in
+// at runtime, so Vuetify's internal theme bookkeeping only ever sees one
+// complete, valid theme object per mode.
 
-const lightTheme: ThemeDefinition = {
-  dark: false,
-  colors: {
-    primary: '#1976D2',
-    secondary: '#424242',
-    accent: '#82B1FF',
-    error: '#FF5252',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FFC107',
-    background: '#FFFFFF',
-    surface: '#FFFFFF',
-  },
-}
-
-const darkTheme: ThemeDefinition = {
-  dark: true,
-  colors: {
-    primary: '#2196F3',
-    secondary: '#616161',
-    accent: '#FF4081',
-    error: '#FF5252',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FFC107',
-    background: '#121212',
-    surface: '#212121',
-  },
-}
+const { light: lightTheme, dark: darkTheme } = createThemes(
+  appConfig.theme.primaryColor,
+  appConfig.theme.secondaryColor,
+)
 
 // ─── Vuetify Instance ─────────────────────────────────────────────────────────
 
 const vuetify = createVuetify({
+  // Every ported shell component gets its responsiveness from
+  // `const { mobile } = useDisplay()`, tuned for this breakpoint — the
+  // sidebar hides itself at the same width.
+  display: {
+    mobileBreakpoint: 'md',
+  },
+
   theme: {
     defaultTheme: 'light',
     themes: {
@@ -92,78 +39,105 @@ const vuetify = createVuetify({
     defaultSet: 'mdi',
     aliases: {
       ...aliases,
-      // Vuetify internal icons
-      checkboxOn: mdiCheckboxMarked,
-      checkboxOff: mdiCheckboxBlankOutline,
-      checkboxIndeterminate: mdiMinusBox,
-      radioOn: mdiRadioboxMarked,
-      radioOff: mdiRadioboxBlank,
-      dropdown: mdiChevronDown,
-      menu: mdiMenu,
-      clear: mdiCloseCircle,
-      close: mdiClose,
-
-      // App-specific icons
-      cloudUpload: mdiCloudUpload,
-      magnify: mdiMagnify,
-      calendarRange: mdiCalendarRange,
-      calendar: mdiCalendar,
-      homeOutline: mdiHomeOutline,
-      viewDashboardOutline: mdiViewDashboardOutline,
-      officeBuildingOutline: mdiOfficeBuildingOutline,
-      clipboardCheckOutline: mdiClipboardCheckOutline,
-      mapMarkerOutline: mdiMapMarkerOutline,
-      calendarCheckOutline: mdiCalendarCheckOutline,
-      emailOutline: mdiEmailOutline,
-      closeBox: mdiCloseBox,
-      arrowRight: mdiArrowRight,
-      chevronRight: mdiChevronRight,
-      rocketLaunchOutline: mdiRocketLaunchOutline,
-
-      // Theme toggle icons
-      weatherNight: mdiWeatherNight,
-      whiteBalanceSunny: mdiWhiteBalanceSunny,
-
-      //Auth
-      eye: mdiEye,
-      eyeOff: mdiEyeOff,
-
-      //Exporting PDF
-      filePdfBox: mdiFilePdfBox,
-      calendarSearch: mdiCalendarSearch,
-
-      //dashboard
-      home: mdiHome,
-      chartBar: mdiChartBar,
-      clipBoard: mdiClipboard,
-      fileDocument: mdiFileDocument,
-      settings: mdiEyeSettingsOutline,
-      logout: mdiLogout,
-      bell: mdiBell,
-      refresh: mdiRefresh,
+      // A few short names used around the app for icons that predate the
+      // shell merge — kept so those call sites didn't need to change.
+      cloudUpload: 'mdi-cloud-upload',
+      magnify: 'mdi-magnify',
+      calendarRange: 'mdi-calendar-range',
+      calendar: 'mdi-calendar',
+      filePdfBox: 'mdi-file-pdf-box',
+      chartBar: 'mdi-chart-bar',
+      refresh: 'mdi-refresh',
+      calendarSearch: 'mdi-calendar-search',
     },
     sets: { mdi },
   },
 
+  // App-wide component defaults. Setting them here instead of repeating props
+  // on every component is what keeps buttons, cards and inputs looking the
+  // same across the whole app — change a value here and it updates everywhere.
   defaults: {
+    global: {
+      ripple: true,
+    },
     VBtn: {
-      variant: 'elevated',
-      rounded: 'md',
+      // `text-none` turns off Material's ALL-CAPS button labels.
+      class: 'text-none font-weight-medium',
+      rounded: 'lg',
+      variant: 'flat',
+      elevation: 0,
+    },
+    VCard: {
+      rounded: 'xl',
+      elevation: 0,
+      border: true,
+    },
+    VSheet: {
+      rounded: 'lg',
     },
     VTextField: {
       variant: 'outlined',
       density: 'comfortable',
-    },
-    VSelect: {
-      variant: 'outlined',
-      density: 'comfortable',
+      rounded: 'lg',
+      hideDetails: 'auto',
     },
     VTextarea: {
       variant: 'outlined',
       density: 'comfortable',
-    },
-    VCard: {
       rounded: 'lg',
+      hideDetails: 'auto',
+    },
+    VSelect: {
+      variant: 'outlined',
+      density: 'comfortable',
+      rounded: 'lg',
+      hideDetails: 'auto',
+    },
+    VAutocomplete: {
+      variant: 'outlined',
+      density: 'comfortable',
+      rounded: 'lg',
+      hideDetails: 'auto',
+    },
+    VChip: {
+      rounded: 'lg',
+      size: 'small',
+    },
+    VAlert: {
+      variant: 'tonal',
+      rounded: 'lg',
+      border: 'start',
+    },
+    VList: {
+      rounded: 'lg',
+    },
+    VListItem: {
+      rounded: 'lg',
+    },
+    VDialog: {
+      scrollable: true,
+    },
+    VMenu: {
+      transition: 'slide-y-transition',
+    },
+    VTooltip: {
+      location: 'bottom',
+    },
+    VDataTable: {
+      hover: true,
+    },
+    VTabs: {
+      sliderColor: 'primary',
+    },
+    VTab: {
+      class: 'text-none font-weight-medium',
+    },
+    VAvatar: {
+      rounded: 'lg',
+    },
+    VProgressLinear: {
+      rounded: true,
+      color: 'primary',
     },
   },
 })

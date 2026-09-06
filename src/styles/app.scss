@@ -1,0 +1,81 @@
+/**
+ * src/styles/app.scss
+ *
+ * Global polish that sits on top of Vuetify's own styles. Imported from
+ * src/plugins/vuetify.ts *after* 'vuetify/styles', so these rules win.
+ *
+ * Anything that belongs to a single component should stay in that
+ * component's <style scoped> block — only app-wide rules go here.
+ */
+
+.v-application {
+  font-family:
+    'Roboto',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Material's default heading letter-spacing is wide and reads as dated. */
+.text-h1,
+.text-h2,
+.text-h3,
+.text-h4,
+.text-h5,
+.text-h6 {
+  letter-spacing: -0.02em !important;
+}
+
+/* Small uppercase label used above groups of cards and sidebar sections. */
+.text-overline-soft {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--v-theme-on-surface-variant));
+}
+
+/* Add to a card to make it lift slightly on hover. */
+.hover-lift {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Thin, theme-aware scrollbars instead of the chunky OS default. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--v-theme-on-surface), 0.2) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--v-theme-on-surface), 0.2);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(var(--v-theme-on-surface), 0.35);
+}
+
+/* Visible focus ring for keyboard users only — mouse clicks stay clean. */
+.v-btn:focus-visible,
+.v-list-item:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+}
