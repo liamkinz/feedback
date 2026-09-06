@@ -2,11 +2,12 @@
 import { ref, computed, watch, onMounted, nextTick, onBeforeUnmount } from 'vue'
 import { Chart, registerables } from 'chart.js'
 import { fetchSiteInspectionChartData } from '@/services/chartService'
-import { useThemeToggle } from '@/components/composables/useThemeToggle'
+import { storeToRefs } from 'pinia'
+import { useTheme } from '@/stores/useTheme'
 
 Chart.register(...registerables)
 
-const { isDark } = useThemeToggle()
+const { isDark } = storeToRefs(useTheme())
 
 // ─── State ────────────────────────────────────────────────────
 const loading = ref(false)

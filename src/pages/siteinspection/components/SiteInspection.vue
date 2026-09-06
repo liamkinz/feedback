@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useTheme } from 'vuetify'
+import { storeToRefs } from 'pinia'
+import { useTheme } from '@/stores/useTheme'
 import { useSiteInspection } from '../composables/useSiteInspection'
 import { useFeedback } from '@/composables/useFeedback'
 import FormLayout from '@/layouts/FormLayout.vue'
 import { useToast } from 'vue-toastification'
 
-const theme = useTheme()
-const isDark = computed(() => theme.global.current.value.dark)
+const { isDark } = storeToRefs(useTheme())
 
 const {
   questions,

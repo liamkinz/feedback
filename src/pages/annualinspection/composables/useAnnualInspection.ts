@@ -1,5 +1,4 @@
-import { ref, computed } from 'vue'
-import { useTheme } from 'vuetify'
+import { ref } from 'vue'
 import type {
   Question,
   RatingQuestion,
@@ -8,9 +7,6 @@ import type {
 } from '../types/annualInspection.types'
 
 export function useAnnualInspection() {
-  const theme = useTheme()
-  const isDark = computed(() => theme.global.current.value.dark)
-
   const questions = ref<Question[]>([
     {
       id: 'CC1',
@@ -137,8 +133,6 @@ export function useAnnualInspection() {
   }
 
   return {
-    theme,
-    isDark,
     questions,
     ratingQuestions,
     ratingOptions,
