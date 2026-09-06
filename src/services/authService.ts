@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import { supabase } from '@/lib/supabase'
 import { db } from '@/db/database'
 import type { LocalUser } from '@/db/database'
+import { defaultRoleId } from '@/utils/roles'
 
 const SALT_ROUNDS = 10
 
@@ -25,7 +26,7 @@ async function cacheUserLocally(user: {
   supabaseId: string
   email: string
   name: string
-  role: string
+  role: number
   password: string
 }): Promise<void> {
   const existing = await db.users.where('email').equals(user.email).first()
@@ -81,8 +82,9 @@ async function toAuthResult<T>(
 }
 
 // ── Register ───────────────────────────────────────────────────
-// Stores name + role directly in auth.users raw_user_meta_data
-// No separate profiles table needed
+// Stores name in auth.users.raw_user_meta_data. Role is NOT sent here — a
+// database trigger (see supabase/migrations/0001_roles_and_role_pages.sql)
+// backfills every new signup to the Viewer role.
 
 export async function register(
   email: string,
@@ -93,10 +95,7 @@ export async function register(
     email,
     password,
     options: {
-      data: {
-        name, // → stored in auth.users.raw_user_meta_data
-        role: 'user',
-      },
+      data: { name }, // → stored in auth.users.raw_user_meta_data
     },
   })
 
@@ -110,7 +109,7 @@ export async function register(
       supabaseId: data.user.id,
       email,
       name,
-      role: 'user',
+      role: defaultRoleId,
       password,
     }),
     'Failed to cache user locally.',
@@ -144,12 +143,13 @@ async function loginOnline(
   }
 
   const meta = data.user.user_metadata
+  const roleId = Number(meta?.role)
 
   const user: LocalUser = {
     supabaseId: data.user.id,
     email: data.user.email!,
     name: meta?.name ?? '',
-    role: meta?.role ?? 'user',
+    role: Number.isFinite(roleId) ? roleId : defaultRoleId,
     passwordHash: '',
     lastLogin: new Date().toISOString(),
   }
@@ -239,12 +239,39 @@ export async function getCurrentSession() {
   return data.session
 }
 
+// ── Current User (fresh from Supabase, not the local cache) ─────
+// Used by the account settings page so "loading" reflects a real request,
+// the same way the rest of the app does.
+
+export async function getCurrentUser(): Promise<
+  AuthResult<{ email: string; name: string; phone: string }>
+> {
+  const { data, error } = await supabase.auth.getUser()
+
+  if (error) return { ok: false, error: error.message, code: 'UNKNOWN' }
+  if (!data.user) return { ok: false, error: 'No authenticated user', code: 'UNKNOWN' }
+
+  return {
+    ok: true,
+    data: {
+      email: data.user.email ?? '',
+      name: data.user.user_metadata?.name ?? '',
+      phone: data.user.user_metadata?.phone ?? '',
+    },
+  }
+}
+
 // ── Update Profile ─────────────────────────────────────────────
-// Update name/role directly in auth.users metadata
+// Update name in auth.users metadata. Role is deliberately NOT updatable
+// here — supabase.auth.updateUser() lets a signed-in user rewrite their own
+// user_metadata, so if `role` were accepted above, anyone could grant
+// themselves Super Admin from the browser console. Changing a role has to
+// happen from the SQL editor (see the migration) until there's a trusted
+// server-side path for it.
 
 export async function updateProfile(updates: {
   name?: string
-  role?: string
+  phone?: string
 }): Promise<AuthResult<null>> {
   const { error } = await supabase.auth.updateUser({
     data: updates, // → updates raw_user_meta_data
@@ -262,6 +289,16 @@ export async function updateProfile(updates: {
     }
   }
 
+  return { ok: true, data: null }
+}
+
+// ── Change Password ────────────────────────────────────────────
+// A signed-in user changing their own password — no admin API needed.
+
+export async function changePassword(password: string): Promise<AuthResult<null>> {
+  const { error } = await supabase.auth.updateUser({ password })
+
+  if (error) return { ok: false, error: error.message, code: 'UNKNOWN' }
   return { ok: true, data: null }
 }
 

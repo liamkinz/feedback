@@ -52,7 +52,7 @@ export interface LocalUser {
   email: string
   name: string
   passwordHash: string // bcrypt hash — never plain text
-  role: string
+  role: number // role id from auth.users.raw_user_meta_data.role — see src/utils/roles.ts
   lastLogin: string
 }
 

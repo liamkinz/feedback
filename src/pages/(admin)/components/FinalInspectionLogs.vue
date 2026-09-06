@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useInspectionLogsStore, type FinalInspectionLog } from '@/stores/inspectionLogsStore'
 import { usePDFExport } from '@/composables/usePDFExport'
 import type { SiteInspectionFeedback } from '@/db/database'
+import AppShellLayout from '@/layouts/AppShellLayout.vue'
 
 const finalInspectionLogsStore = useInspectionLogsStore()
 const search = ref('')
@@ -83,6 +84,8 @@ onMounted(async () => {
 </script>
 
 <template>
+  <AppShellLayout>
+    <template #content>
   <v-container>
     <v-row class="mb-4" align="center">
       <v-col cols="12" md="6">
@@ -141,4 +144,6 @@ onMounted(async () => {
       <div class="text-body-2 text-medium-emphasis mt-1">Please wait</div>
     </v-card>
   </v-overlay>
+    </template>
+  </AppShellLayout>
 </template>

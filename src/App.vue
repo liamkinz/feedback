@@ -87,10 +87,12 @@ nav a:first-of-type {
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 </script>
 
 <template>
   <v-app>
     <RouterView />
+    <ConfirmDialog />
   </v-app>
 </template>
