@@ -3,7 +3,9 @@ import { ref, onMounted, computed } from 'vue'
 import { useFeedback } from '@/composables/useFeedback'
 import { usePDFExport } from '@/composables/usePDFExport'
 import { getAllLocalInspections } from '@/services/siteInspectionService'
+import { getErrorMessage } from '@/utils/helpers'
 import type { SiteInspectionFeedback } from '@/db/database'
+import PublicLayout from '@/layouts/PublicLayout.vue'
 
 const { sync, isSyncing, unsyncedCount } = useFeedback()
 const { isExporting, exportingId, handleExport } =
@@ -12,6 +14,7 @@ const { isExporting, exportingId, handleExport } =
 // ── State ──────────────────────────────────────────────────────
 const inspections = ref<SiteInspectionFeedback[]>([])
 const loading = ref(true)
+const loadError = ref<string | null>(null)
 const isOnline = ref(navigator.onLine)
 const search = ref('')
 
@@ -105,8 +108,17 @@ const totalCount = computed(() => inspections.value.length)
 // ── Fetch ──────────────────────────────────────────────────────
 const fetchInspections = async () => {
   loading.value = true
+  loadError.value = null
+
   try {
     inspections.value = await getAllLocalInspections()
+  } catch (error) {
+    // Swallowing this would leave the table on its empty state, reporting
+    // "No inspections found" — which reads as "there is no data" rather than
+    // "the data could not be read". Catching here also keeps the rejection
+    // from escaping onMounted before the online/offline listeners register.
+    loadError.value = getErrorMessage(error)
+    inspections.value = []
   } finally {
     loading.value = false
   }
@@ -129,191 +141,211 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container fluid class="d-flex flex-column align-center">
-    <!-- Header -->
-    <div class="d-flex align-center justify-space-between w-100 mb-4" style="max-width: 1400px">
-      <h1>Site Inspections Dashboard</h1>
-      <div class="d-flex align-center ga-3">
-        <v-chip :color="isOnline ? 'success' : 'error'" size="small">
-          {{ isOnline ? '🟢 Online' : '🔴 Offline' }}
-        </v-chip>
-        <v-btn
-          color="primary"
-          :loading="isSyncing"
-          :disabled="unsyncedCount === 0"
-          prepend-icon="$cloudUpload"
-          @click="handleSync"
-        >
-          {{ isSyncing ? 'Syncing...' : `Sync (${unsyncedCount} pending)` }}
-        </v-btn>
-      </div>
-    </div>
+  <PublicLayout>
+    <template #content>
+      <v-container fluid class="d-flex flex-column align-center">
+        <!-- Header -->
+        <div class="d-flex align-center justify-space-between w-100 mb-4" style="max-width: 1400px">
+          <h1>Site Inspections Dashboard</h1>
+          <div class="d-flex align-center ga-3">
+            <v-chip :color="isOnline ? 'success' : 'error'" size="small">
+              {{ isOnline ? '🟢 Online' : '🔴 Offline' }}
+            </v-chip>
+            <v-btn
+              color="primary"
+              :loading="isSyncing"
+              :disabled="unsyncedCount === 0"
+              prepend-icon="$cloudUpload"
+              @click="handleSync"
+            >
+              {{ isSyncing ? 'Syncing...' : `Sync (${unsyncedCount} pending)` }}
+            </v-btn>
+          </div>
+        </div>
 
-    <!-- Summary Cards -->
-    <div class="d-flex ga-4 mb-4 w-100" style="max-width: 1400px">
-      <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
-        <div class="text-h4 font-weight-bold text-primary">{{ totalCount }}</div>
-        <div class="text-body-2 text-medium-emphasis">Total Records</div>
-      </v-card>
-      <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
-        <div class="text-h4 font-weight-bold text-success">{{ syncedCount }}</div>
-        <div class="text-body-2 text-medium-emphasis">Synced</div>
-      </v-card>
-      <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
-        <div class="text-h4 font-weight-bold text-warning">{{ unsyncedCount }}</div>
-        <div class="text-body-2 text-medium-emphasis">Pending Sync</div>
-      </v-card>
-    </div>
+        <!-- Summary Cards -->
+        <div class="d-flex ga-4 mb-4 w-100" style="max-width: 1400px">
+          <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
+            <div class="text-h4 font-weight-bold text-primary">{{ totalCount }}</div>
+            <div class="text-body-2 text-medium-emphasis">Total Records</div>
+          </v-card>
+          <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
+            <div class="text-h4 font-weight-bold text-success">{{ syncedCount }}</div>
+            <div class="text-body-2 text-medium-emphasis">Synced</div>
+          </v-card>
+          <v-card rounded="lg" class="flex-1-1 pa-4 text-center summary-card">
+            <div class="text-h4 font-weight-bold text-warning">{{ unsyncedCount }}</div>
+            <div class="text-body-2 text-medium-emphasis">Pending Sync</div>
+          </v-card>
+        </div>
 
-    <!-- Table Card -->
-    <v-card class="w-100 dashboard-card" style="max-width: 1400px; margin-top: 16px">
-      <!-- Toolbar -->
-      <v-card-title class="pa-4">
-        <div class="d-flex align-center ga-3 flex-wrap">
-          <v-text-field
-            v-model="search"
-            placeholder="Search inspections..."
-            prepend-inner-icon="$magnify"
-            variant="outlined"
-            density="compact"
-            hide-details
-            clearable
-            style="max-width: 280px"
-          />
-
-          <!-- Date Range -->
-          <v-menu v-model="dateMenu" :close-on-content-click="false" location="bottom start">
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
+        <!-- Table Card -->
+        <v-card class="w-100 dashboard-card" style="max-width: 1400px; margin-top: 16px">
+          <!-- Toolbar -->
+          <v-card-title class="pa-4">
+            <div class="d-flex align-center ga-3 flex-wrap">
+              <v-text-field
+                v-model="search"
+                placeholder="Search inspections..."
+                prepend-inner-icon="$magnify"
                 variant="outlined"
-                :color="dateRange.length ? 'primary' : 'default'"
-                prepend-icon="$calendarRange"
+                density="compact"
+                hide-details
+                clearable
+                style="max-width: 280px"
+              />
+
+              <!-- Date Range -->
+              <v-menu v-model="dateMenu" :close-on-content-click="false" location="bottom start">
+                <template #activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="outlined"
+                    :color="dateRange.length ? 'primary' : 'default'"
+                    prepend-icon="$calendarRange"
+                  >
+                    {{ dateRangeText }}
+                  </v-btn>
+                </template>
+                <v-card min-width="360" rounded="lg" elevation="4">
+                  <v-card-title class="pa-4 pb-0 text-body-1 font-weight-medium"
+                    >Select Date Range</v-card-title
+                  >
+                  <v-card-subtitle class="px-4 pb-2 text-caption">
+                    {{
+                      dateRange.length === 0
+                        ? 'Pick a start date'
+                        : dateRange.length === 1
+                          ? 'Now pick an end date'
+                          : dateRangeText
+                    }}
+                  </v-card-subtitle>
+                  <v-date-picker
+                    v-model="dateRange"
+                    multiple="range"
+                    hide-header
+                    show-adjacent-months
+                    color="primary"
+                    class="elevation-0"
+                  />
+                  <v-card-actions class="pa-4 pt-0">
+                    <v-btn variant="text" color="error" @click="clearDateRange">Clear</v-btn>
+                    <v-spacer />
+                    <v-btn
+                      variant="tonal"
+                      color="primary"
+                      :disabled="dateRange.length < 2"
+                      @click="dateMenu = false"
+                      >Apply</v-btn
+                    >
+                  </v-card-actions>
+                </v-card>
+              </v-menu>
+
+              <v-chip
+                v-if="dateRange.length >= 2"
+                color="primary"
+                closable
+                @click:close="clearDateRange"
               >
                 {{ dateRangeText }}
-              </v-btn>
-            </template>
-            <v-card min-width="360" rounded="lg" elevation="4">
-              <v-card-title class="pa-4 pb-0 text-body-1 font-weight-medium"
-                >Select Date Range</v-card-title
-              >
-              <v-card-subtitle class="px-4 pb-2 text-caption">
-                {{
-                  dateRange.length === 0
-                    ? 'Pick a start date'
-                    : dateRange.length === 1
-                      ? 'Now pick an end date'
-                      : dateRangeText
-                }}
-              </v-card-subtitle>
-              <v-date-picker
-                v-model="dateRange"
-                multiple="range"
-                hide-header
-                show-adjacent-months
-                color="primary"
-                class="elevation-0"
-              />
-              <v-card-actions class="pa-4 pt-0">
-                <v-btn variant="text" color="error" @click="clearDateRange">Clear</v-btn>
-                <v-spacer />
-                <v-btn
-                  variant="tonal"
-                  color="primary"
-                  :disabled="dateRange.length < 2"
-                  @click="dateMenu = false"
-                  >Apply</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-menu>
+              </v-chip>
+            </div>
+          </v-card-title>
 
-          <v-chip
-            v-if="dateRange.length >= 2"
-            color="primary"
-            closable
-            @click:close="clearDateRange"
+          <!-- Data Table -->
+          <v-data-table
+            :headers="headers"
+            :items="filteredInspections"
+            :loading="loading"
+            :search="search"
+            hover
+            class="elevation-0 w-100"
+            items-per-page="10"
           >
-            {{ dateRangeText }}
-          </v-chip>
-        </div>
-      </v-card-title>
+            <!-- Synced chip -->
+            <template #[`item.synced`]="{ item }">
+              <v-chip
+                :color="item.synced === 1 ? 'success' : 'warning'"
+                size="small"
+                variant="tonal"
+              >
+                {{ item.synced === 1 ? '✅ Yes' : '⏳ Pending' }}
+              </v-chip>
+            </template>
 
-      <!-- Data Table -->
-      <v-data-table
-        :headers="headers"
-        :items="filteredInspections"
-        :loading="loading"
-        :search="search"
-        hover
-        class="elevation-0 w-100"
-        items-per-page="10"
-      >
-        <!-- Synced chip -->
-        <template #[`item.synced`]="{ item }">
-          <v-chip :color="item.synced === 1 ? 'success' : 'warning'" size="small" variant="tonal">
-            {{ item.synced === 1 ? '✅ Yes' : '⏳ Pending' }}
-          </v-chip>
-        </template>
+            <!-- Comments truncated -->
+            <template #[`item.comments`]="{ item }">
+              <div class="text-truncate" style="max-width: 160px">
+                {{ item.comments || '—' }}
+              </div>
+            </template>
 
-        <!-- Comments truncated -->
-        <template #[`item.comments`]="{ item }">
-          <div class="text-truncate" style="max-width: 160px">
-            {{ item.comments || '—' }}
-          </div>
-        </template>
+            <!-- ↓ Export button per row -->
+            <template #[`item.actions`]="{ item }">
+              <div class="d-flex">
+                <!-- PDF Lib Version -->
+                <v-btn
+                  size="small"
+                  color="primary"
+                  variant="tonal"
+                  :loading="isExporting && exportingId === item.id"
+                  prepend-icon="$filePdfBox"
+                  @click="handleExport(item)"
+                >
+                  PDF
+                </v-btn>
+              </div>
+            </template>
 
-        <!-- ↓ Export button per row -->
-        <template #[`item.actions`]="{ item }">
-          <div class="d-flex">
-            <!-- PDF Lib Version -->
-            <v-btn
-              size="small"
-              color="primary"
-              variant="tonal"
-              :loading="isExporting && exportingId === item.id"
-              prepend-icon="$filePdfBox"
-              @click="handleExport(item)"
-            >
-              PDF
-            </v-btn>
-          </div>
-        </template>
+            <!-- Failed load and genuinely-empty are different states and must
+                 not share a message. -->
+            <template #no-data>
+              <div v-if="loadError" class="text-center py-8">
+                <v-icon size="48" color="error">mdi-alert-circle-outline</v-icon>
+                <p class="text-body-1 font-weight-medium mt-2 mb-1">Couldn't load inspections</p>
+                <p class="text-body-2 text-medium-emphasis mb-3">{{ loadError }}</p>
+                <v-btn color="primary" variant="tonal" :loading="loading" @click="fetchInspections">
+                  Try again
+                </v-btn>
+              </div>
 
-        <!-- Empty state -->
-        <template #no-data>
-          <div class="text-center py-8">
-            <v-icon size="48" color="grey-lighten-1">$calendarSearch</v-icon>
-            <p class="text-medium-emphasis mt-2">
-              {{ dateRange.length >= 2 ? 'No records in selected range' : 'No inspections found' }}
-            </p>
-            <v-btn
-              v-if="dateRange.length >= 2"
-              variant="text"
-              color="primary"
-              class="mt-2"
-              @click="clearDateRange"
-            >
-              Clear date filter
-            </v-btn>
-          </div>
-        </template>
+              <div v-else class="text-center py-8">
+                <v-icon size="48" color="grey-lighten-1">$calendarSearch</v-icon>
+                <p class="text-medium-emphasis mt-2">
+                  {{
+                    dateRange.length >= 2 ? 'No records in selected range' : 'No inspections found'
+                  }}
+                </p>
+                <v-btn
+                  v-if="dateRange.length >= 2"
+                  variant="text"
+                  color="primary"
+                  class="mt-2"
+                  @click="clearDateRange"
+                >
+                  Clear date filter
+                </v-btn>
+              </div>
+            </template>
 
-        <template #loading>
-          <v-skeleton-loader type="table-row@5" />
-        </template>
-      </v-data-table>
-    </v-card>
-  </v-container>
+            <template #loading>
+              <v-skeleton-loader type="table-row@5" />
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-container>
 
-  <!-- Generating PDF overlay -->
-  <v-overlay v-model="isExporting" class="align-center justify-center" persistent>
-    <v-card class="pa-6 text-center" rounded="xl" min-width="260">
-      <v-progress-circular indeterminate color="primary" size="48" class="mb-4" />
-      <div class="text-body-1 font-weight-medium">Generating PDF...</div>
-      <div class="text-body-2 text-medium-emphasis mt-1">Please wait</div>
-    </v-card>
-  </v-overlay>
+      <!-- Generating PDF overlay -->
+      <v-overlay v-model="isExporting" class="align-center justify-center" persistent>
+        <v-card class="pa-6 text-center" rounded="xl" min-width="260">
+          <v-progress-circular indeterminate color="primary" size="48" class="mb-4" />
+          <div class="text-body-1 font-weight-medium">Generating PDF...</div>
+          <div class="text-body-2 text-medium-emphasis mt-1">Please wait</div>
+        </v-card>
+      </v-overlay>
+    </template>
+  </PublicLayout>
 </template>
 
 <style scoped>
