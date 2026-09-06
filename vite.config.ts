@@ -44,18 +44,19 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: '/src/assets/icon-192x192.png',
-            sizes: '192x192',
+            // The 192/512px icon files this used to point at were never
+            // actually added to the repo, so the manifest failed to load
+            // them. CSMRLogo.png is already 1024x1024 — browsers scale a
+            // single large icon down fine for both the regular and
+            // maskable slots. Swap in real 192x192/512x512 exports later
+            // if you want crisper small sizes.
+            src: '/src/assets/CSMRLogo.png',
+            sizes: '1024x1024',
             type: 'image/png',
           },
           {
-            src: '/src/assets/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: '/src/assets/icon-512x512.png',
-            sizes: '512x512',
+            src: '/src/assets/CSMRLogo.png',
+            sizes: '1024x1024',
             type: 'image/png',
             purpose: 'maskable', // for Android adaptive icons
           },
