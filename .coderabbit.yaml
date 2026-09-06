@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+reviews:
+  profile: chill
+  high_level_summary: true
+  review_status: false          # skip the "review skipped/status" comments
+  collapse_walkthrough: true    # keep the PR page readable
+  request_changes_workflow: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+  path_filters:
+    - "!**/dist/**"
+    - "!**/node_modules/**"
+    - "!**/*.lock"
+    - "!supabase/migrations/**"
+  path_instructions:
+    - path: "src/**/*.vue"
+      instructions: |
+        Prefer clear, straightforward code over clever abstractions.
+        Flag missing loading and error states on async data.
+        Flag props or emits without explicit TypeScript types.
+    - path: "src/**/*.ts"
+      instructions: |
+        Flag any use of `any` and unhandled promise rejections.
+        Flag Supabase queries that ignore the returned error.
+    - path: 'stores/**/*.ts'
+      instructions: |
+        These files intentionally do NOT wrap Supabase calls in try/catch blocks.
+        Supabase query chains (.select, .insert, .update, .delete, .rpc) throw on
+        error, and here errors are handled through Supabase's returned error objects
+        and existing patterns. Never suggest adding try/catch around Supabase
+        database queries in these files.
+
+chat:
+  auto_reply: true
